@@ -25,6 +25,7 @@ O documento de perfil criado no Spec #2 (`users/{uid}`) já inicializa `config` 
 - `src/lib/schemas/settingsSchema.ts` (schema Zod de validação do formulário)
 - `src/lib/utils/time.ts` (utilitário `calculateTargetHourUTC(localTime, timezone)`)
 - `src/app/settings/page.tsx` (página protegida com o formulário de preferências)
+- Testes unitários (`vitest`) para `settingsSchema.ts` e `calculateTargetHourUTC`, cobrindo os casos válidos e inválidos descritos nos requisitos funcionais
 - Testes manuais de aceitação local (carregar preferências existentes, editar, salvar, recarregar e confirmar persistência)
 
 ## Fora de Escopo
@@ -62,10 +63,14 @@ RF-5: Ao salvar, o sistema MUST calcular `schedule.targetHourUTC` a partir de `s
 RF-6: O sistema MUST informar o usuário sobre o resultado da operação de salvamento (sucesso ou falha), desabilitando o botão de salvar enquanto a operação estiver em andamento.
 - Aceitação: Durante o salvamento o botão fica desabilitado com o rótulo "Salvando..."; ao final, uma mensagem de sucesso ou erro é exibida.
 
+RF-7: `settingsSchema` e `calculateTargetHourUTC` MUST ter testes unitários automatizados cobrindo, no mínimo: tópicos vazios, fonte com URL inválida, lista de fontes vazia, `localTime` fora do formato `HH:MM`, `promptCustomization` acima de 500 caracteres, e a conversão de horário local para UTC em pelo menos dois fusos horários distintos.
+- Aceitação: `npm test` executa os testes de `settingsSchema.ts` e `time.ts` e todos passam.
+
 ## Critérios de Sucesso
 - CS-1: 100% das alterações salvas em `/settings` refletem corretamente em `users/{uid}` no Firestore, sem sobrescrever campos imutáveis.
 - CS-2: Reabrir `/settings` após salvar sempre mostra os dados recém-salvos (sem valores obsoletos ou vazios).
 - CS-3: Nenhum envio com dados inválidos chega a gerar uma chamada de escrita no Firestore (validação client-side bloqueia antes).
+- CS-4: `settingsSchema.ts` e `calculateTargetHourUTC` têm testes unitários passando via `npm test`, cobrindo os casos válidos e inválidos do RF-7.
 
 ## Cenários de Aceitação
 1. Cenário: Primeira configuração de preferências
@@ -118,6 +123,6 @@ RF-6: O sistema MUST informar o usuário sobre o resultado da operação de salv
 ## Próximos Passos
 - Rodar `/speckit.clarify` e `/speckit.plan` para detalhar a implementação técnica e gerar `plan.md`.
 - Gerar `tasks.md` com `/speckit.tasks` a partir do plano.
-- Implementar os arquivos listados no Escopo (`settingsSchema.ts`, `time.ts`, `settings/page.tsx`).
+- Implementar os arquivos listados no Escopo (`settingsSchema.ts`, `time.ts`, `settings/page.tsx`) e seus testes unitários (`settingsSchema.test.ts`, `time.test.ts`).
 
 *Gerado em: 2026-07-25*
