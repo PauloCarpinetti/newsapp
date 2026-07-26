@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -17,6 +18,12 @@ export default function DashboardPage() {
           <p className="mt-3 text-slate-400">
             {user?.displayName || user?.email || "Usuário autenticado"}
           </p>
+          <Link
+            href="/settings"
+            className="mt-6 inline-block rounded-xl bg-cyan-500 px-4 py-2 font-semibold text-slate-950 transition hover:bg-cyan-400"
+          >
+            Editar preferências
+          </Link>
         </div>
       </main>
     </ProtectedRoute>

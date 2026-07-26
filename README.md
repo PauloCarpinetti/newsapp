@@ -18,3 +18,4 @@ O arquivo `.env.local` deve conter as variáveis Firebase e OpenAI. Não commite
 - Fluxo de login com Google
 - Proteção de rotas privadas
 - Criação automática de perfil do usuário no Firestore
+- Página `/settings` para editar tópicos, fontes de informação, horário de recebimento e customização de prompt, com validação via `react-hook-form` + `zod` e cálculo automático de `schedule.targetHourUTC`
