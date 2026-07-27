@@ -22,8 +22,8 @@ export function AppHeader() {
 
   return (
     <header className="border-b border-outline-variant bg-surface text-on-surface">
-      <nav className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-6">
+      <nav className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:gap-6 sm:px-6 sm:py-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-6">
           <Link href="/dashboard" className="font-semibold">
             AI Digest Aggregator
           </Link>

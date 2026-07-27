@@ -224,7 +224,7 @@ function SettingsForm() {
                   <div className="flex items-center gap-2">
                     <select
                       {...register(`sources.${index}.type`)}
-                      className="rounded-md border border-outline bg-background p-2 text-on-background"
+                      className="shrink-0 rounded-md border border-outline bg-background p-2 text-on-background"
                     >
                       <option value="rss">RSS</option>
                       <option value="twitter">Twitter</option>
@@ -233,12 +233,12 @@ function SettingsForm() {
                     <input
                       {...register(`sources.${index}.url`)}
                       placeholder="URL ou @usuario"
-                      className="flex-1 rounded-md border border-outline bg-background p-2 text-on-background"
+                      className="min-w-0 flex-1 rounded-md border border-outline bg-background p-2 text-on-background"
                     />
                     <button
                       type="button"
                       onClick={() => remove(index)}
-                      className="text-error hover:opacity-80"
+                      className="shrink-0 text-error hover:opacity-80"
                       aria-label="Remover fonte"
                     >
                       <Trash2 size={20} />
