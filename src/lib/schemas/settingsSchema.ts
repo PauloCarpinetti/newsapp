@@ -1,7 +1,10 @@
 import * as z from "zod";
 
 export const settingsSchema = z.object({
-  topics: z.string().min(1, "Adicione pelo menos um tópico."),
+  topics: z
+    .array(z.string().min(1))
+    .min(1, "Adicione pelo menos um tópico.")
+    .max(10, "No máximo 10 tópicos."),
   sources: z
     .array(
       z.object({
@@ -17,6 +20,7 @@ export const settingsSchema = z.object({
     .string()
     .max(500, "Máximo de 500 caracteres")
     .optional(),
+  timezone: z.string().min(1, "Fuso horário inválido."),
 });
 
 export type SettingsFormValues = z.infer<typeof settingsSchema>;

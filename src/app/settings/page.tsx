@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { Plus, Trash2 } from "lucide-react";
+import { doc, getDoc } from "firebase/firestore";
+import { Plus, Trash2, X } from "lucide-react";
 import { db } from "@/lib/firebase/config";
 import { useAuth } from "@/contexts/AuthContext";
 import { AppHeader } from "@/components/AppHeader";
@@ -13,7 +13,6 @@ import {
   settingsSchema,
   type SettingsFormValues,
 } from "@/lib/schemas/settingsSchema";
-import { calculateTargetHourUTC } from "@/lib/utils/time";
 
 export default function SettingsPage() {
   return (
@@ -28,10 +27,13 @@ const defaultSource: SettingsFormValues["sources"][number] = {
   url: "",
 };
 
+const MAX_TOPICS = 10;
+
 function SettingsForm() {
   const { user } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [topicInput, setTopicInput] = useState("");
   const [feedback, setFeedback] = useState<
     { type: "success" | "error"; message: string } | null
   >(null);
@@ -41,14 +43,16 @@ function SettingsForm() {
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
-      topics: "",
+      topics: [],
       sources: [defaultSource],
       localTime: "07:00",
       promptCustomization: "",
+      timezone: "",
     },
   });
 
@@ -56,6 +60,12 @@ function SettingsForm() {
     control,
     name: "sources",
   });
+
+  const topics = watch("topics");
+
+  useEffect(() => {
+    setValue("timezone", Intl.DateTimeFormat().resolvedOptions().timeZone);
+  }, [setValue]);
 
   useEffect(() => {
     async function loadUserData() {
@@ -65,7 +75,7 @@ function SettingsForm() {
 
       if (snap.exists()) {
         const data = snap.data();
-        setValue("topics", (data.config?.topics ?? []).join(", "));
+        setValue("topics", data.config?.topics ?? []);
         setValue(
           "sources",
           data.config?.sources?.length ? data.config.sources : [defaultSource],
@@ -81,30 +91,40 @@ function SettingsForm() {
     loadUserData();
   }, [user, setValue]);
 
+  function addTopic() {
+    const value = topicInput.trim();
+    if (!value || topics.length >= MAX_TOPICS) return;
+    setValue("topics", [...topics, value], { shouldValidate: true });
+    setTopicInput("");
+  }
+
+  function removeTopic(index: number) {
+    setValue(
+      "topics",
+      topics.filter((_, i) => i !== index),
+      { shouldValidate: true },
+    );
+  }
+
   const onSubmit = async (data: SettingsFormValues) => {
     if (!user) return;
     setIsSaving(true);
     setFeedback(null);
 
     try {
-      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const targetHourUTC = calculateTargetHourUTC(
-        data.localTime,
-        userTimezone,
-      );
-
-      const userRef = doc(db, "users", user.uid);
-      await updateDoc(userRef, {
-        "config.topics": data.topics
-          .split(",")
-          .map((topic) => topic.trim())
-          .filter(Boolean),
-        "config.sources": data.sources,
-        "config.promptCustomization": data.promptCustomization || null,
-        "schedule.localTime": data.localTime,
-        "schedule.timezone": userTimezone,
-        "schedule.targetHourUTC": targetHourUTC,
+      const idToken = await user.getIdToken();
+      const response = await fetch("/api/settings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify(data),
       });
+
+      if (!response.ok) {
+        throw new Error("Falha ao salvar preferências.");
+      }
 
       setFeedback({
         type: "success",
@@ -145,13 +165,49 @@ function SettingsForm() {
           <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
             <div>
               <label className="block text-sm font-medium text-on-surface-variant">
-                Tópicos de Interesse (separados por vírgula)
+                Tópicos de Interesse (até {MAX_TOPICS})
               </label>
-              <input
-                {...register("topics")}
-                placeholder="Ex: Inteligência Artificial, Next.js, Economia"
-                className="mt-1 block w-full rounded-md border border-outline bg-background p-2 text-on-background shadow-sm"
-              />
+              <div className="mt-1 flex flex-wrap gap-2">
+                {topics.map((topic, index) => (
+                  <span
+                    key={`${topic}-${index}`}
+                    className="flex items-center gap-1 rounded-full bg-primary-container px-3 py-1 text-sm text-on-primary-container"
+                  >
+                    {topic}
+                    <button
+                      type="button"
+                      onClick={() => removeTopic(index)}
+                      aria-label={`Remover tópico ${topic}`}
+                      className="hover:opacity-70"
+                    >
+                      <X size={14} />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="mt-2 flex gap-2">
+                <input
+                  value={topicInput}
+                  onChange={(event) => setTopicInput(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.preventDefault();
+                      addTopic();
+                    }
+                  }}
+                  placeholder="Ex: Inteligência Artificial"
+                  disabled={topics.length >= MAX_TOPICS}
+                  className="flex-1 rounded-md border border-outline bg-background p-2 text-on-background shadow-sm disabled:opacity-60"
+                />
+                <button
+                  type="button"
+                  onClick={addTopic}
+                  disabled={topics.length >= MAX_TOPICS}
+                  className="flex items-center gap-1 rounded-md border border-outline px-3 text-sm text-primary hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <Plus size={16} /> Adicionar
+                </button>
+              </div>
               {errors.topics && (
                 <span className="mt-1 block text-sm text-error">
                   {errors.topics.message}

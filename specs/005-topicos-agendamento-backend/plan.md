@@ -95,14 +95,15 @@ Respostas:
 - `400 { error: string, issues: ... }` — payload não passa no `safeParse` do schema.
 - `500 { error: string }` — falha inesperada (ex.: Admin SDK mal configurado), sem detalhes sensíveis no corpo da resposta.
 
-O `uid` usado no caminho `users/{uid}` vem exclusivamente de `adminAuth.verifyIdToken(idToken).uid` — nunca do corpo da requisição. Isso torna RF-5 (rejeitar alteração de outro usuário) uma propriedade estrutural do endpoint, não uma checagem extra a ser esquecida.
+O `uid` usado no caminho `users/{uid}` vem exclusivamente de `getAdminAuth().verifyIdToken(idToken).uid` — nunca do corpo da requisição. Isso torna RF-5 (rejeitar alteração de outro usuário) uma propriedade estrutural do endpoint, não uma checagem extra a ser esquecida.
 
 ### 2. `src/lib/firebase/admin.ts`
 
 ```ts
+import "server-only";
 import { cert, getApps, getApp, initializeApp } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
-import { getFirestore } from "firebase-admin/firestore";
+import { getAuth, type Auth } from "firebase-admin/auth";
+import { getFirestore, type Firestore } from "firebase-admin/firestore";
 
 function getAdminApp() {
   return getApps().length
@@ -117,11 +118,19 @@ function getAdminApp() {
       });
 }
 
-export const adminAuth = getAuth(getAdminApp());
-export const adminDb = getFirestore(getAdminApp());
+// Lazy: inicializar no top-level do módulo rodaria durante a coleta de dados
+// de página do `next build`, antes de haver credenciais reais garantidas —
+// mesma classe de problema já resolvida para o Firebase client (spec 001/002).
+export function getAdminAuth(): Auth {
+  return getAuth(getAdminApp());
+}
+
+export function getAdminDb(): Firestore {
+  return getFirestore(getAdminApp());
+}
 ```
 
-Import restrito a Route Handlers (`src/app/api/**/route.ts`); nunca a partir de um arquivo com `"use client"`.
+`server-only` (pacote oficial do Next.js) garante em build-time que este módulo nunca seja importado por um Client Component. Import restrito a Route Handlers (`src/app/api/**/route.ts`).
 
 ### 3. `settingsSchema.ts`
 
