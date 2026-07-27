@@ -6,7 +6,7 @@
 
 **Purpose**: Confirm the Admin SDK credentials this feature depends on are in place. No new npm dependencies are needed (`firebase-admin` and `zod` are already installed).
 
-- [ ] T001 Confirm `FIREBASE_CLIENT_EMAIL` and `FIREBASE_PRIVATE_KEY` are set with real values in `.env.local` (placeholders have existed since spec 001 but were never used). — still missing; the endpoint currently returns 500 "Erro de configuração do servidor" for any authenticated request until this is set.
+- [x] T001 Confirm `FIREBASE_CLIENT_EMAIL` and `FIREBASE_PRIVATE_KEY` are set with real values in `.env.local` (placeholders have existed since spec 001 but were never used).
 
 ---
 
@@ -48,7 +48,7 @@
 
 **Independent Test**: Adicionar tags até o limite de 10 e confirmar que uma 11ª é bloqueada; remover uma tag e confirmar que só ela desaparece.
 
-- [x] T012 [US2] Replace the single comma-separated `topics` text input in `src/app/settings/page.tsx` with a tag input: a text field + Enter/button to add, rendering each topic as a removable pill (RF-1). Implemented and type-checked; not yet clicked through in a live authenticated session (requires real login, see T021).
+- [x] T012 [US2] Replace the single comma-separated `topics` text input in `src/app/settings/page.tsx` with a tag input: a text field + Enter/button to add, rendering each topic as a removable pill (RF-1).
 - [x] T013 [US2] Wire the tag list to `setValue("topics", ...)` so it stays in sync with `settingsSchema` validation (min 1, max 10).
 - [x] T014 [US2] Disable/block adding a new tag once 10 are already present, surfacing the Zod max-length message otherwise (RF-2).
 - [x] T015 [US2] Update the `useEffect` that loads existing data to set `topics` directly as an array from Firestore (no more `.join(", ")`), since `config.topics` is already stored as an array.
@@ -77,4 +77,4 @@
 
 - [x] T019 [P] Add a note in `README.md` about the `/api/settings` endpoint and the Admin SDK env vars now being required for `/settings` to work end-to-end.
 - [x] T020 [P] Confirm `npx tsc --noEmit`, `npm run build`, `npm run lint`, and `npm test` all pass.
-- [ ] T021 [P] Manual validation of the 4 acceptance scenarios in spec.md: add/remove tags, hit the 10-tag limit, save via the backend endpoint, and confirm an unauthorized/invalid-token request is rejected without altering Firestore. — blocked on T001 (real Admin SDK credentials) and a real authenticated login session; only the no-token 401 case was verified via `curl` so far.
+- [x] T021 [P] Manual validation of the 4 acceptance scenarios in spec.md: add/remove tags, hit the 10-tag limit, save via the backend endpoint, and confirm an unauthorized/invalid-token request is rejected without altering Firestore. — confirmed working end-to-end by the requester with real Admin SDK credentials.
