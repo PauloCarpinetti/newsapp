@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { AppHeader } from "@/components/AppHeader";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -9,23 +9,20 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <main className="min-h-screen bg-slate-950 px-6 py-20 text-slate-100">
-        <div className="mx-auto max-w-3xl rounded-3xl border border-slate-800 bg-slate-900 p-10">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-400">
-            Dashboard
-          </p>
-          <h1 className="mt-4 text-3xl font-semibold">Bem-vindo ao painel</h1>
-          <p className="mt-3 text-slate-400">
-            {user?.displayName || user?.email || "Usuário autenticado"}
-          </p>
-          <Link
-            href="/settings"
-            className="mt-6 inline-block rounded-xl bg-cyan-500 px-4 py-2 font-semibold text-slate-950 transition hover:bg-cyan-400"
-          >
-            Editar preferências
-          </Link>
-        </div>
-      </main>
+      <div className="min-h-screen bg-background text-on-background">
+        <AppHeader />
+        <main className="px-6 py-20">
+          <div className="mx-auto max-w-3xl rounded-3xl border border-outline-variant bg-surface p-10 text-on-surface">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
+              Dashboard
+            </p>
+            <h1 className="mt-4 text-3xl font-semibold">Bem-vindo ao painel</h1>
+            <p className="mt-3 text-on-surface-variant">
+              {user?.displayName || user?.email || "Usuário autenticado"}
+            </p>
+          </div>
+        </main>
+      </div>
     </ProtectedRoute>
   );
 }
