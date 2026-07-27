@@ -26,13 +26,13 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 py-20 text-slate-100">
-      <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 p-8 shadow-2xl shadow-slate-950/30">
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-400">
+    <main className="flex min-h-screen items-center justify-center bg-background px-6 py-20 text-on-background">
+      <div className="w-full max-w-md rounded-3xl border border-outline-variant bg-surface p-8 text-on-surface shadow-sm">
+        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-primary">
           Login
         </p>
         <h1 className="mt-4 text-3xl font-semibold">Acesse sua conta</h1>
-        <p className="mt-3 text-sm leading-6 text-slate-400">
+        <p className="mt-3 text-sm leading-6 text-on-surface-variant">
           Entre com o Google para criar ou recuperar o perfil do usuário.
         </p>
 
@@ -40,12 +40,12 @@ export default function LoginPage() {
           type="button"
           onClick={handleLogin}
           disabled={loading}
-          className="mt-8 w-full rounded-xl bg-cyan-500 px-4 py-3 font-semibold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-8 w-full rounded-xl bg-primary px-4 py-3 font-semibold text-on-primary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Entrando..." : "Entrar com Google"}
         </button>
 
-        {error ? <p className="mt-4 text-sm text-rose-400">{error}</p> : null}
+        {error ? <p className="mt-4 text-sm text-error">{error}</p> : null}
       </div>
     </main>
   );

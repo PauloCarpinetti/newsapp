@@ -15,7 +15,11 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }, [loading, router, user]);
 
   if (loading) {
-    return <div className="p-10 text-slate-300">Carregando...</div>;
+    return (
+      <div className="min-h-screen bg-background p-10 text-on-surface-variant">
+        Carregando...
+      </div>
+    );
   }
 
   if (!user) {
