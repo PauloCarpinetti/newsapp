@@ -197,13 +197,13 @@ function SettingsForm() {
                   }}
                   placeholder="Ex: Inteligência Artificial"
                   disabled={topics.length >= MAX_TOPICS}
-                  className="flex-1 rounded-md border border-outline bg-background p-2 text-on-background shadow-sm disabled:opacity-60"
+                  className="min-w-0 flex-1 rounded-md border border-outline bg-background p-2 text-on-background shadow-sm disabled:opacity-60"
                 />
                 <button
                   type="button"
                   onClick={addTopic}
                   disabled={topics.length >= MAX_TOPICS}
-                  className="flex items-center gap-1 rounded-md border border-outline px-3 text-sm text-primary hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="flex shrink-0 items-center gap-1 rounded-md border border-outline px-3 text-sm text-primary hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <Plus size={16} /> Adicionar
                 </button>

@@ -22,8 +22,8 @@ A spec 005 corrigiu a escrita crítica de `/settings`, mas deixou de fora, de pr
 ## Escopo (In Scope)
 - `src/app/api/auth/profile/route.ts` (novo): endpoint `POST` autenticado que cria `users/{uid}` se ainda não existir, usando `uid`/`email`/`displayName` extraídos do ID token verificado.
 - `src/lib/firebase/auth.ts`: `loginWithGoogle()` continua abrindo o popup do Google no client (isso não pode mover para o servidor), mas deixa de fazer `getDoc`/`setDoc` diretamente — passa a chamar o novo endpoint depois do login bem-sucedido.
-- `src/components/AppHeader.tsx`: ajustes de layout responsivo (espaçamento, quebra de linha) para telas pequenas.
-- `src/app/settings/page.tsx`: ajuste na linha de cada fonte de informação para que o botão de remover não saia da margem em telas estreitas.
+- `src/components/AppHeader.tsx`: título centralizado em uma linha, com os itens de navegação (Dashboard, Configurações, Sair) centralizados em uma linha abaixo — o botão de tema não faz parte desse layout, pois é flutuante e independente.
+- `src/app/settings/page.tsx`: ajuste na linha de cada fonte de informação e na linha de adicionar tópicos, para que nenhum botão saia da margem em telas estreitas.
 
 ## Fora de Escopo
 - Qualquer mudança no fluxo de OAuth em si (o popup do Google continua sendo iniciado pelo client — só a escrita no Firestore muda de lugar).
@@ -50,17 +50,20 @@ RF-4: O fluxo de login (popup do Google via Firebase Auth client SDK) MUST conti
 - Aceitação: O botão "Entrar com Google" continua funcionando exatamente como antes do ponto de vista do usuário.
 
 ### US2 — Cabeçalho Responsivo
-RF-5: O `AppHeader` MUST permanecer legível e sem overflow horizontal em larguras de tela pequenas (a partir de 320-375px, faixa típica de celular).
-- Aceitação: Redimensionar a janela (ou usar o modo de dispositivo móvel do navegador) para 375px de largura não produz barra de rolagem horizontal nem elementos cortados/sobrepostos no cabeçalho.
+RF-5: O `AppHeader` MUST exibir o título "AI Digest Aggregator" centralizado em uma linha, com os itens de navegação (Dashboard, Configurações, Sair) centralizados em uma linha abaixo, sem overflow horizontal em larguras de tela pequenas (a partir de 320-375px, faixa típica de celular). O botão de alternância de tema (flutuante, spec 004) não faz parte desse layout.
+- Aceitação: Em qualquer largura, o título aparece centralizado acima dos três itens de navegação, também centralizados; redimensionar a janela para 375px não produz barra de rolagem horizontal nem elementos cortados/sobrepostos.
 
-### US3 — Linha de Fontes sem Overflow
-RF-6: O botão de remover fonte (ícone de lixeira) em `/settings` MUST permanecer inteiramente visível dentro da margem do formulário em telas pequenas.
+### US3 — Linhas de Formulário sem Overflow em `/settings`
+RF-6: O botão de remover fonte (ícone de lixeira) em cada linha de fonte de informação MUST permanecer inteiramente visível dentro da margem do formulário em telas pequenas.
 - Aceitação: Em 375px de largura, todos os elementos de uma linha de fonte (seletor de tipo, campo de URL, botão de remover) ficam visíveis dentro do card, sem o botão de remover ser cortado ou empurrado para fora.
+
+RF-7: O botão "Adicionar" da linha de incluir tópicos MUST permanecer inteiramente visível dentro da margem do formulário em telas pequenas, sem forçar o campo de texto para fora do card.
+- Aceitação: Em 375px de largura, o campo de texto e o botão "Adicionar" da linha de tópicos ficam visíveis dentro do card, sem overflow horizontal.
 
 ## Critérios de Sucesso
 - SC-1: Nenhuma escrita client-side (`setDoc`/`getDoc` de escrita) para `users/{uid}` ocorre mais a partir do fluxo de login — só o endpoint autenticado escreve.
 - SC-2: Usuários não conseguem, via requisição direta à API, criar/alterar o perfil de um `uid` que não é o seu.
-- SC-3: O `AppHeader` e a linha de fontes em `/settings` não apresentam overflow horizontal em nenhuma largura entre 320px e o desktop.
+- SC-3: O `AppHeader`, a linha de fontes e a linha de adicionar tópicos em `/settings` não apresentam overflow horizontal em nenhuma largura entre 320px e o desktop.
 
 ## Cenários de Aceitação
 1. Cenário: Primeiro login cria o perfil via backend
@@ -76,12 +79,17 @@ RF-6: O botão de remover fonte (ícone de lixeira) em `/settings` MUST permanec
 3. Cenário: Cabeçalho em tela pequena
    - Dado o `AppHeader` renderizado em uma página autenticada
    - Quando a largura da tela for reduzida para a faixa de um celular (≈375px)
-   - Então todos os elementos do cabeçalho continuam visíveis e organizados, sem overflow horizontal
+   - Então o título aparece centralizado em uma linha, com Dashboard/Configurações/Sair centralizados na linha abaixo, sem overflow horizontal
 
 4. Cenário: Lixeira de fonte em tela pequena
    - Dado o formulário de `/settings` aberto com pelo menos uma fonte cadastrada
    - Quando a largura da tela for reduzida para a faixa de um celular (≈375px)
    - Então o botão de remover a fonte continua visível e clicável dentro da margem do card
+
+5. Cenário: Botão de adicionar tópico em tela pequena
+   - Dado o formulário de `/settings` aberto
+   - Quando a largura da tela for reduzida para a faixa de um celular (≈375px)
+   - Então o botão "Adicionar" da linha de tópicos continua visível dentro da margem do card, sem empurrar o campo de texto para fora
 
 ## Entidades Chave
 Nenhuma entidade nova — reaproveita `UserProfile` já definida na spec 002.

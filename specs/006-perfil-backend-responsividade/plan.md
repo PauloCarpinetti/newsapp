@@ -171,34 +171,48 @@ export async function loginWithGoogle() {
 
 Os imports `doc`, `getDoc`, `setDoc`, `serverTimestamp` (client `firebase/firestore`) e `db` (`@/lib/firebase/config`) somem de `auth.ts` — não são mais usados nesse arquivo. Qualquer falha na chamada ao endpoint cai no mesmo `catch` genérico já existente, reaproveitando o tratamento de erro já exibido em `login/page.tsx` (RF do risco "propagar erro claro" do spec).
 
-### 3. `AppHeader` — sem overflow em telas pequenas
+### 3. `AppHeader` — título centralizado, navegação em linha abaixo
 
-Troca `justify-between` sem wrap por `flex-wrap` no `<nav>` e no grupo de links, com gaps/padding menores no breakpoint padrão (mobile-first) e maiores a partir de `sm:`:
+Revisão após teste manual: em vez de só permitir quebra de linha (`flex-wrap`) mantendo o layout horizontal original, o cabeçalho passa a ter duas linhas sempre — título centralizado em cima, navegação (Dashboard, Configurações, Sair) centralizada embaixo. Isso resolve o overflow em qualquer largura, não só quando o conteúdo não cabe, e o botão de logout deixa de ficar isolado à direita via `justify-between`, passando a fazer parte do mesmo grupo de navegação:
 
 ```tsx
-<nav className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:gap-6 sm:px-6 sm:py-4">
-  <div className="flex flex-wrap items-center gap-3 sm:gap-6">
-    {/* Link "AI Digest Aggregator", Link "Dashboard", Link "Configurações" — sem mudança de conteúdo */}
+<nav className="mx-auto flex max-w-5xl flex-col items-center gap-2 px-4 py-3 sm:gap-3 sm:px-6 sm:py-4">
+  <Link href="/dashboard" className="font-semibold">AI Digest Aggregator</Link>
+  <div className="flex flex-wrap items-center justify-center gap-4 text-sm sm:gap-6">
+    <Link href="/dashboard" className="hover:text-primary">Dashboard</Link>
+    <Link href="/settings" className="hover:text-primary">Configurações</Link>
+    <button type="button" onClick={handleLogout} disabled={isSigningOut} className="flex items-center gap-1 text-on-surface-variant hover:text-error disabled:cursor-not-allowed disabled:opacity-60">
+      <LogOut size={16} />
+      {isSigningOut ? "Saindo..." : "Sair"}
+    </button>
   </div>
-  {/* botão "Sair" — sem mudança de conteúdo */}
 </nav>
 ```
 
-Em vez de cortar/esconder texto, o cabeçalho quebra para uma segunda linha quando não cabe — resolve o overflow sem remover nenhum link.
+O `ThemeToggle` (spec 004) continua fixo/flutuante no canto da tela, fora do `AppHeader` — não faz parte desse agrupamento.
 
-### 4. Linha de fontes em `/settings` — sem overflow
+### 4. Linhas de formulário em `/settings` — sem overflow
 
-O `<input>` com `flex-1` não tem `min-width` definido, então o navegador não o encolhe abaixo do necessário para exibir seu conteúdo/placeholder — isso empurra o botão de lixeira para fora da margem em telas estreitas. Fix mínimo, padrão para esse problema de flexbox:
+O mesmo bug de flexbox aparece em duas linhas do formulário: o `<input>` com `flex-1` não tem `min-width` definido, então o navegador não o encolhe abaixo do necessário para exibir seu conteúdo/placeholder — isso empurra o botão ao lado para fora da margem em telas estreitas. Fix mínimo, padrão para esse problema de flexbox, aplicado nas duas linhas:
 
 ```tsx
+{/* Linha de cada fonte */}
 <div className="flex items-center gap-2">
   <select className="shrink-0 rounded-md border border-outline bg-background p-2 text-on-background">...</select>
   <input className="min-w-0 flex-1 rounded-md border border-outline bg-background p-2 text-on-background" ... />
   <button className="shrink-0 text-error hover:opacity-80" ...><Trash2 size={20} /></button>
 </div>
+
+{/* Linha de adicionar tópico */}
+<div className="mt-2 flex gap-2">
+  <input className="min-w-0 flex-1 rounded-md border border-outline bg-background p-2 text-on-background shadow-sm disabled:opacity-60" ... />
+  <button className="flex shrink-0 items-center gap-1 rounded-md border border-outline px-3 text-sm text-primary hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40" ...>
+    <Plus size={16} /> Adicionar
+  </button>
+</div>
 ```
 
-`min-w-0` permite que o input encolha normalmente; `shrink-0` no `<select>` e no botão garante que eles nunca fiquem espremidos a ponto de quebrar. Só o input perde largura em telas estreitas, o que é o comportamento esperado. O campo de tópicos (`topics`) tem uma estrutura de flex parecida mas não foi reportado com o mesmo bug — fica fora do escopo desta correção, mas é um candidato óbvio se o mesmo problema aparecer lá no futuro.
+`min-w-0` permite que o input encolha normalmente; `shrink-0` nos elementos ao lado (`select`, botões) garante que eles nunca fiquem espremidos a ponto de quebrar. Só o input perde largura em telas estreitas, o que é o comportamento esperado. Confirma a previsão registrada na primeira versão deste plano: o mesmo bug realmente apareceu na linha de tópicos assim que testado em tela pequena.
 
 ## Complexity Tracking
 
