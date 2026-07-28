@@ -1,9 +1,21 @@
 import Link from "next/link";
 
 const features = [
-  "Autenticação com Google",
-  "Perfil inicial do usuário",
-  "Configuração local segura",
+  {
+    title: "Tópicos sob medida",
+    description:
+      "Escolha até 10 temas de interesse e a IA prioriza o que realmente importa pra você.",
+  },
+  {
+    title: "Suas fontes, do seu jeito",
+    description:
+      "Agregue feeds RSS e sites que você já confia — o digest é montado a partir deles.",
+  },
+  {
+    title: "Chega na hora certa",
+    description:
+      "Defina o horário de entrega e receba um resumo novo, gerado automaticamente, todos os dias.",
+  },
 ];
 
 export default function HomePage() {
@@ -15,12 +27,12 @@ export default function HomePage() {
             AI Digest Aggregator
           </p>
           <h1 className="text-4xl font-semibold sm:text-6xl">
-            Sua base inicial para digests inteligentes e perfil do usuário.
+            Seu resumo diário de notícias, direto ao ponto.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-on-surface-variant">
-            Esta versão inicial já oferece a fundação visual e estrutural do
-            produto, com App Router, Tailwind e o começo do fluxo de
-            autenticação.
+            Escolha seus tópicos e fontes favoritas, defina o horário, e
+            receba todos os dias um digest gerado por IA — sem precisar
+            garimpar notícia por notícia.
           </p>
           <Link
             href="/login"
@@ -33,14 +45,14 @@ export default function HomePage() {
         <section className="grid gap-4 md:grid-cols-3">
           {features.map((feature) => (
             <article
-              key={feature}
+              key={feature.title}
               className="rounded-2xl border border-outline-variant bg-surface p-6"
             >
               <h2 className="text-lg font-semibold text-on-surface">
-                {feature}
+                {feature.title}
               </h2>
               <p className="mt-2 text-sm leading-6 text-on-surface-variant">
-                Estrutura preparada para evoluir com novos recursos do produto.
+                {feature.description}
               </p>
             </article>
           ))}
