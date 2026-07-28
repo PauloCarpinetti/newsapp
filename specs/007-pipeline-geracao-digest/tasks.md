@@ -6,9 +6,9 @@
 
 **Purpose**: Install the new dependencies and configuration this feature needs.
 
-- [ ] T001 Install `rss-parser` and `cheerio` (`npm install rss-parser cheerio`).
-- [ ] T002 [P] Add `CRON_SECRET` to `.env.local.example`, with a generated value in `.env.local` for local testing.
-- [ ] T003 [P] Create `vercel.json` at the repo root with the hourly cron schedule (`0 * * * *`) pointing at `/api/cron/generate`.
+- [x] T001 Install `rss-parser` and `cheerio` (`npm install rss-parser cheerio`).
+- [x] T002 [P] Add `CRON_SECRET` to `.env.local.example`, with a generated value in `.env.local` for local testing.
+- [x] T003 [P] Create `vercel.json` at the repo root with the hourly cron schedule (`0 * * * *`) pointing at `/api/cron/generate`.
 
 ---
 
@@ -18,13 +18,13 @@
 
 **⚠️ CRITICAL**: No route work can begin until this phase is complete.
 
-- [ ] T004 Create `src/lib/schemas/digestSchema.ts` with `digestContentSchema` (`intro: string`, `sections: { title, summary }[]`) and the exported `DigestContent` type.
-- [ ] T005 Create `src/lib/services/scraperService.ts` with `truncateText(text, maxChars)` (pure), `extractFromRss(url)` (via `rss-parser`), and `extractFromWebsite(url)` (fetch + `cheerio`, stripping `script`/`style`/`nav`/`footer`/`header`/`noscript` before extracting text) (RF-4, RF-5).
-- [ ] T006 [P] Write unit tests in `src/lib/services/scraperService.test.ts` for `truncateText`: text shorter than the limit is unchanged, text longer than the limit is cut to exactly `maxChars`, empty string stays empty.
-- [ ] T007 Implement `aggregateSources(sources)` in `scraperService.ts` using `Promise.allSettled` over the source list, rejecting `twitter` sources immediately with a clear error, and joining only the fulfilled results (RF-9).
-- [ ] T008 Create `src/lib/services/aiService.ts` with a lazy `getOpenAIClient()` accessor (mirrors `getAdminAuth()`/`getAdminDb()` — `new OpenAI()` throws immediately without `OPENAI_API_KEY`, so it must not run at module load time).
-- [ ] T009 Implement `generateDigestWithAI(rawText, topics, promptCustomization, model)` in `aiService.ts` using `client.beta.chat.completions.parse` with `zodResponseFormat(digestContentSchema, "digest")`; throw if `message.parsed` is undefined (RF-6).
-- [ ] T010 [P] Run `npm test` and confirm `scraperService.test.ts` passes.
+- [x] T004 Create `src/lib/schemas/digestSchema.ts` with `digestContentSchema` (`intro: string`, `sections: { title, summary }[]`) and the exported `DigestContent` type.
+- [x] T005 Create `src/lib/services/scraperService.ts` with `truncateText(text, maxChars)` (pure), `extractFromRss(url)` (via `rss-parser`), and `extractFromWebsite(url)` (fetch + `cheerio`, stripping `script`/`style`/`nav`/`footer`/`header`/`noscript` before extracting text) (RF-4, RF-5).
+- [x] T006 [P] Write unit tests in `src/lib/services/scraperService.test.ts` for `truncateText`: text shorter than the limit is unchanged, text longer than the limit is cut to exactly `maxChars`, empty string stays empty.
+- [x] T007 Implement `aggregateSources(sources)` in `scraperService.ts` using `Promise.allSettled` over the source list, rejecting `twitter` sources immediately with a clear error, and joining only the fulfilled results (RF-9).
+- [x] T008 Create `src/lib/services/aiService.ts` with a lazy `getOpenAIClient()` accessor (mirrors `getAdminAuth()`/`getAdminDb()` — `new OpenAI()` throws immediately without `OPENAI_API_KEY`, so it must not run at module load time).
+- [x] T009 Implement `generateDigestWithAI(rawText, topics, promptCustomization, model)` in `aiService.ts` using `client.beta.chat.completions.parse` with `zodResponseFormat(digestContentSchema, "digest")`; throw if `message.parsed` is undefined (RF-6).
+- [x] T010 [P] Run `npm test` and confirm `scraperService.test.ts` passes.
 
 **Checkpoint**: `digestSchema`, `scraperService`, and `aiService` are implemented and individually correct (schema validated, truncation tested).
 
@@ -36,12 +36,12 @@
 
 **Independent Test**: Com um usuário de teste cujo `schedule.targetHourUTC` bate com a hora atual e ao menos uma fonte RSS/website válida, chamar o endpoint com o `CRON_SECRET` correto resulta em um digest `completed` com `content` e `tokensUsed` preenchidos.
 
-- [ ] T011 [US1] Create `src/app/api/cron/generate/route.ts` with `export const maxDuration = 60` and a `GET` handler that returns `401` when the `Authorization: Bearer <CRON_SECRET>` header is missing or incorrect (RF-1).
-- [ ] T012 [US1] Query `users` where `schedule.targetHourUTC` equals the current UTC hour via `getAdminDb()` (RF-2).
-- [ ] T013 [US1] Implement `processUser(db, userDoc)`: create the `users/{uid}/digests` document with `status: 'processing'`, `isRead: false`, and `FieldValue.serverTimestamp()` for `createdAt`, before any aggregation/AI call (RF-3).
-- [ ] T014 [US1] Call `aggregateSources` with the user's `config.sources`, then `generateDigestWithAI` with the aggregated text, `config.topics`, `config.promptCustomization`, and `config.gptModel` (default `"gpt-4o-mini"`) (RF-4, RF-6).
-- [ ] T015 [US1] On success, update the digest document to `status: 'completed'` with `content` and `tokensUsed` (RF-7).
-- [ ] T016 [US1] Return `200 { processed, total }` from the route, without including any per-user sensitive data (emails, tokens, raw source content) in the response body (RF-8).
+- [x] T011 [US1] Create `src/app/api/cron/generate/route.ts` with `export const maxDuration = 60` and a `GET` handler that returns `401` when the `Authorization: Bearer <CRON_SECRET>` header is missing or incorrect (RF-1). Verified via `curl`: no header and wrong secret both return `401 {"error":"Não autenticado."}`; correct secret returns `200`.
+- [x] T012 [US1] Query `users` where `schedule.targetHourUTC` equals the current UTC hour via `getAdminDb()` (RF-2). Verified via `curl` with the correct secret: `200 {"processed":0,"total":0}` (no users currently match the live UTC hour — confirms the query executes without error against real Firestore).
+- [x] T013 [US1] Implement `processUser(db, userDoc)`: create the `users/{uid}/digests` document with `status: 'processing'`, `isRead: false`, and `FieldValue.serverTimestamp()` for `createdAt`, before any aggregation/AI call (RF-3).
+- [x] T014 [US1] Call `aggregateSources` with the user's `config.sources`, then `generateDigestWithAI` with the aggregated text, `config.topics`, `config.promptCustomization`, and `config.gptModel` (default `"gpt-4o-mini"`) (RF-4, RF-6).
+- [x] T015 [US1] On success, update the digest document to `status: 'completed'` with `content` and `tokensUsed` (RF-7).
+- [x] T016 [US1] Return `200 { processed, total }` from the route, without including any per-user sensitive data (emails, tokens, raw source content) in the response body (RF-8).
 
 **Checkpoint**: O caminho feliz completo funciona ponta a ponta para um usuário de teste com fontes válidas.
 
@@ -53,9 +53,9 @@
 
 **Independent Test**: Um usuário com uma fonte inválida e uma válida ainda recebe um digest `completed` usando o conteúdo da fonte válida; numa execução com múltiplos usuários, uma falha total em um deles não impede que os demais recebam seus digests.
 
-- [ ] T017 [US2] Wrap the per-user `Promise.allSettled(usersSnapshot.docs.map((doc) => processUser(db, doc)))` at the route level, so an unhandled failure in one user's processing (outside the inner try/catch) never stops the batch (RF-10).
-- [ ] T018 [US2] Wrap the aggregation + AI generation inside `processUser` in a try/catch that updates the digest to `status: 'failed'` with `errorMessage` on any error, ensuring no digest is ever left in `status: 'processing'` after the route finishes (RF-11).
-- [ ] T019 [US2] Manually verify: configure a test user with one broken source URL and one working one, confirm the digest still completes using only the working source's content (per T007's `Promise.allSettled` in `aggregateSources`).
+- [x] T017 [US2] Wrap the per-user `Promise.allSettled(usersSnapshot.docs.map((doc) => processUser(db, doc)))` at the route level, so an unhandled failure in one user's processing (outside the inner try/catch) never stops the batch (RF-10).
+- [x] T018 [US2] Wrap the aggregation + AI generation inside `processUser` in a try/catch that updates the digest to `status: 'failed'` with `errorMessage` on any error, ensuring no digest is ever left in `status: 'processing'` after the route finishes (RF-11).
+- [ ] T019 [US2] Manually verify: configure a test user with one broken source URL and one working one, confirm the digest still completes using only the working source's content (per T007's `Promise.allSettled` in `aggregateSources`). — needs a real user with `schedule.targetHourUTC` matching the live hour; handed off to the requester.
 
 **Checkpoint**: Falha em uma fonte ou em um usuário isolado não compromete o restante da execução.
 
@@ -67,9 +67,9 @@
 
 **Independent Test**: Disparar o endpoint duas vezes na mesma hora para o mesmo usuário não cria um segundo digest; um usuário cujas fontes falham todas nunca gera uma chamada à API de IA.
 
-- [ ] T020 [US3] In `processUser`, before creating the `processing` document, query the most recent digest (`orderBy("createdAt", "desc").limit(1)`) and skip processing if it was created today (UTC) and its `status` isn't `'failed'` (RF-12).
-- [ ] T021 [US3] After aggregation, check whether the combined text is empty/whitespace-only; if so, update the digest directly to `status: 'failed'` with an explanatory `errorMessage` and return without calling `generateDigestWithAI` (RF-13).
-- [ ] T022 [US3] Manually verify: call the endpoint twice in succession for the same eligible user and confirm only one digest document exists for today; configure a user with only broken sources and confirm their digest is `failed` with no corresponding OpenAI API call (check the OpenAI dashboard/usage or a temporary log).
+- [x] T020 [US3] In `processUser`, before creating the `processing` document, query the most recent digest (`orderBy("createdAt", "desc").limit(1)`) and skip processing if it was created today (UTC) and its `status` isn't `'failed'` (RF-12).
+- [x] T021 [US3] After aggregation, check whether the combined text is empty/whitespace-only; if so, update the digest directly to `status: 'failed'` with an explanatory `errorMessage` and return without calling `generateDigestWithAI` (RF-13).
+- [ ] T022 [US3] Manually verify: call the endpoint twice in succession for the same eligible user and confirm only one digest document exists for today; configure a user with only broken sources and confirm their digest is `failed` with no corresponding OpenAI API call (check the OpenAI dashboard/usage or a temporary log). — needs a real user with `schedule.targetHourUTC` matching the live hour; handed off to the requester.
 
 **Checkpoint**: Reprocessamento duplicado e chamadas de IA sem conteúdo são estruturalmente impedidos, não apenas evitados por sorte.
 
@@ -79,7 +79,7 @@
 
 **Purpose**: Ensure the feature is validated, documented, and consistent with the rest of the project.
 
-- [ ] T023 [P] Add a note in `README.md` describing the digest generation pipeline, the new `CRON_SECRET`/`OPENAI_API_KEY` requirements, and the `users/{uid}/digests` subcollection.
-- [ ] T024 [P] Confirm `npx tsc --noEmit`, `npm run build`, `npm run lint`, and `npm test` all pass.
-- [ ] T025 [P] Manual end-to-end validation via `curl` with the real `CRON_SECRET` against a real test user (real RSS/website sources, real `OPENAI_API_KEY`): confirm a `completed` digest with plausible `content` and `tokensUsed`, confirm the 6 acceptance scenarios in spec.md.
+- [x] T023 [P] Add a note in `README.md` describing the digest generation pipeline, the new `CRON_SECRET`/`OPENAI_API_KEY` requirements, and the `users/{uid}/digests` subcollection.
+- [x] T024 [P] Confirm `npx tsc --noEmit`, `npm run build`, `npm run lint`, and `npm test` all pass.
+- [ ] T025 [P] Manual end-to-end validation via `curl` with the real `CRON_SECRET` against a real test user (real RSS/website sources, real `OPENAI_API_KEY`): confirm a `completed` digest with plausible `content` and `tokensUsed`, confirm the 6 acceptance scenarios in spec.md. — auth-rejection paths (scenario 4) verified via `curl`; the happy-path/failure/idempotency scenarios (1, 2, 3, 5, 6) need a real user whose `schedule.targetHourUTC` matches the live UTC hour, handed off to the requester.
 - [ ] T026 [P] After merge, write an ADR (`docs/adrs/0004-*.md`) documenting the cron pipeline's idempotency and failure-isolation design, per this plan's Constitution Check note.
