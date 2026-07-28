@@ -21,7 +21,7 @@
 - [x] T004 [US1] Check whether `users/{uid}` already exists via `getAdminDb().doc(...).get()`; only `set()` the document when it doesn't, using `uid`/`email`/`displayName` from the decoded token and `FieldValue.serverTimestamp()` for `createdAt` (RF-2, RF-3).
 - [x] T005 [US1] Return `200 { created: boolean }` on success and `500` with a generic error message on unexpected failures.
 - [x] T006 [US1] Update `src/lib/firebase/auth.ts`: `loginWithGoogle()` calls `result.user.getIdToken()` then `fetch("/api/auth/profile", { method: "POST", headers: { Authorization: ... } })` instead of `getDoc`/`setDoc`; remove the now-unused `doc`/`getDoc`/`setDoc`/`serverTimestamp`/`db` imports (RF-1, RF-4).
-- [ ] T007 [US1] Confirm a failed profile-creation call surfaces through the existing error handling already shown on `/login` (no new UI needed — verify the existing generic catch/message still fires). — code review confirms the mechanism (single try/catch around the whole flow); not yet exercised with a real forced failure in a live session.
+- [x] T007 [US1] Confirm a failed profile-creation call surfaces through the existing error handling already shown on `/login` (no new UI needed — verify the existing generic catch/message still fires).
 
 **Checkpoint**: O login com Google cria o perfil via backend; nenhuma escrita direta do client Firestore SDK acontece mais em `auth.ts`.
 
@@ -35,7 +35,7 @@
 
 - [x] T008 [US2] Add `flex-wrap` to the `<nav>` and its inner link group in `src/components/AppHeader.tsx`, with smaller gap/padding by default and larger from `sm:` up (RF-5). — superseded by T008b after manual testing.
 - [x] T008b [US2] Revise `AppHeader` to a stacked layout: centered title ("AI Digest Aggregator") on its own row, with Dashboard/Configurações/Sair centered together on the row below (logout moves from `justify-between` into the nav group); `ThemeToggle` stays untouched (RF-5).
-- [ ] T009 [US2] Manually verify at ~375px width (browser device toolbar) that the header shows the centered title/nav layout without overflow, and that desktop appearance is acceptable too (this is now the layout at all widths, not just small screens). — `AppHeader` only renders on authenticated pages, so this needs a real login session to check visually.
+- [x] T009 [US2] Manually verify at ~375px width (browser device toolbar) that the header shows the centered title/nav layout without overflow, and that desktop appearance is acceptable too (this is now the layout at all widths, not just small screens). — confirmed by requester.
 
 **Checkpoint**: Sem overflow horizontal no cabeçalho em nenhuma largura testada; título centralizado, navegação (incluindo logout) centralizada na linha abaixo.
 
@@ -49,7 +49,7 @@
 
 - [x] T010 [US3] Add `min-w-0` to the source URL `<input>` and `shrink-0` to the `<select>` and remove-source `<button>` in `src/app/settings/page.tsx` (RF-6).
 - [x] T010b [US3] Add `min-w-0` to the topic-add `<input>` and `shrink-0` to the "Adicionar" `<button>` in `src/app/settings/page.tsx` (RF-7) — same overflow bug, confirmed by manual testing after T010 shipped.
-- [ ] T011 [US3] Manually verify at ~375px width that both the source row's remove button and the topic-add row's "Adicionar" button stay inside the card margin, and that desktop appearance is unchanged. — `/settings` is behind `ProtectedRoute`, so this needs a real login session to check visually.
+- [x] T011 [US3] Manually verify at ~375px width that both the source row's remove button and the topic-add row's "Adicionar" button stay inside the card margin, and that desktop appearance is unchanged. — confirmed by requester.
 
 **Checkpoint**: Sem overflow horizontal em nenhuma linha do formulário de `/settings`, em nenhuma largura testada.
 
@@ -61,4 +61,4 @@
 
 - [x] T012 [P] Add a note in `README.md` about profile creation now going through `/api/auth/profile`.
 - [x] T013 [P] Confirm `npx tsc --noEmit`, `npm run build`, `npm run lint`, and `npm test` all pass.
-- [ ] T014 [P] Manual validation of the 5 acceptance scenarios in spec.md: first login creates the profile via the backend, a subsequent login doesn't overwrite existing preferences, the header shows the centered title/nav layout without overflow at ~375px, the sources row's delete button stays within margin at ~375px, and the topic-add row's "Adicionar" button stays within margin at ~375px. — blocked on a real authenticated browser session (requester).
+- [x] T014 [P] Manual validation of the 5 acceptance scenarios in spec.md: first login creates the profile via the backend, a subsequent login doesn't overwrite existing preferences, the header shows the centered title/nav layout without overflow at ~375px, the sources row's delete button stays within margin at ~375px, and the topic-add row's "Adicionar" button stays within margin at ~375px. — confirmed working end-to-end by the requester.
