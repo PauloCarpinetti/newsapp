@@ -56,6 +56,15 @@ export async function aggregateSources(sources: Source[]): Promise<string> {
     }),
   );
 
+  settled.forEach((result, index) => {
+    if (result.status === "rejected") {
+      console.warn(
+        `Falha ao agregar fonte ${sources[index]?.url}:`,
+        result.reason instanceof Error ? result.reason.message : result.reason,
+      );
+    }
+  });
+
   return settled
     .filter(
       (result): result is PromiseFulfilledResult<string> =>
