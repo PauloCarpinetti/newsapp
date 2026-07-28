@@ -8,6 +8,22 @@ Sync Impact Report
 	✅ .specify/templates/spec-template.md (nenhuma seção obrigatória afetada)
 	✅ .specify/templates/tasks-template.md (tarefas de segurança, resiliência e documentação já são suportadas)
 - Follow-up TODO: confirmar a data original de ratificação
+
+Sync Impact Report (1.0.0 -> 1.1.0)
+- Version change: 1.0.0 -> 1.1.0
+- Modified principles: nenhum princípio central alterado
+- Modified sections: Workflow e Disciplina de Código (convenção de nomes de branch
+	atualizada para refletir a prática real do GitHub Spec Kit — `NNN-nome-curto` para
+	features geradas a partir de uma spec numerada, com `feature/`/`fix/`/`refactor/`
+	mantidos e `docs/` adicionado para trabalho que não nasce de uma spec). Corrigido via
+	`/speckit.analyze` (spec 006) identificando a divergência entre a regra escrita e a
+	prática usada desde a spec 001.
+- Added sections: nenhuma
+- Removed sections: nenhuma
+- Templates requiring updates: ✅ .specify/templates/plan-template.md (nenhuma mudança necessária)
+	✅ .specify/templates/spec-template.md (nenhuma mudança necessária)
+	✅ .specify/templates/tasks-template.md (nenhuma mudança necessária)
+- Follow-up TODO: confirmar a data original de ratificação (herdado da v1.0.0, ainda pendente)
 -->
 
 # AI Digest Aggregator Constitution
@@ -82,8 +98,12 @@ disciplinas como responsabilidades explícitas:
 
 - A branch `main` MUST refletir apenas código funcional e pronto para produção.
 - Nenhum commit MUST ser feito diretamente na `main`.
-- Todo desenvolvimento MUST ocorrer em branch isolada, nomeada como
-	`feature/nome-da-feature`, `fix/descricao-do-bug` ou `refactor/o-que-mudou`.
+- Todo desenvolvimento MUST ocorrer em branch isolada. Features que nascem de uma spec
+	numerada do GitHub Spec Kit MUST usar a convenção `NNN-nome-curto` (ex.:
+	`005-topicos-agendamento-backend`), espelhando o diretório `specs/NNN-nome-curto/`
+	correspondente. Trabalho que não nasce de uma spec numerada usa `feature/nome-da-feature`,
+	`fix/descricao-do-bug`, `refactor/o-que-mudou` ou `docs/o-que-mudou` (documentação,
+	constitution, ADRs).
 - Toda integração MUST ocorrer via Pull Request, ainda que o autor faça a
 	auto-revisão. O self-review MUST verificar o diff, ausência de código comentado e
 	conformidade com linting e formatação.
@@ -107,4 +127,4 @@ princípios MUST ser verificada. Violações MUST ser corrigidas ou justificadas
 explicitamente em `Complexity Tracking` e aprovadas antes da entrega. A data original
 de ratificação ainda precisa ser confirmada pelo responsável pelo projeto.
 
-**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): confirmar data original | **Last Amended**: 2026-07-22
+**Version**: 1.1.0 | **Ratified**: TODO(RATIFICATION_DATE): confirmar data original | **Last Amended**: 2026-07-27
