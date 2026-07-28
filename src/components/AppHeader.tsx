@@ -22,27 +22,27 @@ export function AppHeader() {
 
   return (
     <header className="border-b border-outline-variant bg-surface text-on-surface">
-      <nav className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-        <div className="flex items-center gap-6">
-          <Link href="/dashboard" className="font-semibold">
-            AI Digest Aggregator
-          </Link>
-          <Link href="/dashboard" className="text-sm hover:text-primary">
+      <nav className="mx-auto flex max-w-5xl flex-col items-center gap-2 px-4 py-3 sm:gap-3 sm:px-6 sm:py-4">
+        <Link href="/dashboard" className="font-semibold">
+          AI Digest Aggregator
+        </Link>
+        <div className="flex flex-wrap items-center justify-center gap-4 text-sm sm:gap-6">
+          <Link href="/dashboard" className="hover:text-primary">
             Dashboard
           </Link>
-          <Link href="/settings" className="text-sm hover:text-primary">
+          <Link href="/settings" className="hover:text-primary">
             Configurações
           </Link>
+          <button
+            type="button"
+            onClick={handleLogout}
+            disabled={isSigningOut}
+            className="flex items-center gap-1 text-on-surface-variant hover:text-error disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <LogOut size={16} />
+            {isSigningOut ? "Saindo..." : "Sair"}
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={handleLogout}
-          disabled={isSigningOut}
-          className="flex items-center gap-1 text-sm text-on-surface-variant hover:text-error disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          <LogOut size={16} />
-          {isSigningOut ? "Saindo..." : "Sair"}
-        </button>
       </nav>
     </header>
   );
