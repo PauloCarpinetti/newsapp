@@ -29,7 +29,7 @@
 
 **Independent Test**: Um usuário com um digest `completed` mais recente vê o conteúdo formatado ao abrir `/dashboard`; um usuário com digest `processing` vê o skeleton; a transição para `completed` aparece sem reload.
 
-- [ ] T004 [US1] Rewrite `src/app/dashboard/page.tsx` to subscribe via `onSnapshot` to a query on `users/{uid}/digests` (`orderBy("createdAt", "desc")`, `limit(1)`), storing the latest digest (or `null` if none) in state (RF-1).
+- [ ] T004 [US1] Extend `src/app/dashboard/page.tsx` (keeping the existing "Bem-vindo ao painel" greeting) to subscribe via `onSnapshot` to a query on `users/{uid}/digests` (`orderBy("createdAt", "desc")`, `limit(1)`), storing the latest digest (or `null` if none) in state (RF-1).
 - [ ] T005 [US1] Return the `unsubscribe` function from the `useEffect` so the listener is cancelled on unmount (RF-6, risk mitigation).
 - [ ] T006 [US1] Render `DigestSkeleton` while the initial snapshot hasn't arrived yet, or while the latest digest's `status` is `'processing'` (RF-2).
 - [ ] T007 [US1] Render `content.intro` and each `content.sections[].{title, summary}` via `DigestMarkdown` when `status === 'completed'` (RF-3).
@@ -63,3 +63,4 @@
 - [ ] T015 [P] Add a note in `README.md` describing the dashboard's latest-digest view and the `/history` page.
 - [ ] T016 [P] Confirm `npx tsc --noEmit`, `npm run build`, `npm run lint`, and `npm test` all pass.
 - [ ] T017 [P] Manual validation of the 6 acceptance scenarios in spec.md: digest ready, digest processing, automatic transition, digest failed, no digest yet, and history navigation/pagination.
+- [ ] T018 [P] After merge, write ADR 0005 (`docs/adrs/0005-*.md`) documenting the real-time `onSnapshot` subscription, cursor-based pagination, and safe AI-content markdown rendering patterns introduced in this spec, per plan.md's Constitution Check note.

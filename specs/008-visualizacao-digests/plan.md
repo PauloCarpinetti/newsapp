@@ -26,14 +26,15 @@
 
 **Constraints**: O listener `onSnapshot` do dashboard MUST ser cancelado (`unsubscribe()`) ao desmontar o componente. `react-markdown` MUST ser usado com a configuração padrão (sem `rehype-raw` ou qualquer plugin que interprete HTML embutido), para não abrir superfície de XSS a partir do texto gerado pela IA.
 
-**Scale/Scope**: Dois componentes novos (`DigestMarkdown`, `DigestSkeleton`), uma página nova (`/history`), reescrita de uma página existente (`/dashboard`), um link novo no `AppHeader`.
+**Scale/Scope**: Dois componentes novos (`DigestMarkdown`, `DigestSkeleton`), uma página nova (`/history`), extensão de uma página existente (`/dashboard`, mantendo a saudação atual), um link novo no `AppHeader`.
 
 ## Constitution Check
 
 - Nenhuma escrita crítica nesta spec — apenas leitura, dentro das regras de segurança do Firestore já configuradas (spec 002). Princípio II não é violado.
 - `DigestMarkdown` centraliza a lógica de renderização em um único componente reutilizado por `/dashboard` e `/history`, em vez de duplicar a chamada ao `react-markdown` — Princípio III.
 - Os quatro estados possíveis (`processing`, `completed`, `failed`, vazio) são tratados explicitamente, sem tela em branco ou erro não tratado — Princípio IV.
-- **Gate**: PASS. Nenhuma violação identificada.
+- Esta spec introduz três padrões novos no projeto — primeiro listener `onSnapshot` em tempo real, primeira paginação por cursor do Firestore, e a decisão deliberada de não habilitar HTML bruto no `react-markdown` (renderização segura de conteúdo gerado por IA). Isso conta como decisão arquitetural significativa (Princípio V) — MUST gerar uma 5ª ADR após a implementação, documentando os três padrões juntos (mesmo formato das ADRs 0001-0004).
+- **Gate**: PASS. Nenhuma violação identificada; a exigência de ADR (Princípio V) fica agendada, não pendente sem plano.
 
 ## Project Structure
 
@@ -53,7 +54,7 @@ specs/008-visualizacao-digests/
 src/
 ├── app/
 │   ├── dashboard/
-│   │   └── page.tsx              # reescrito: assina o digest mais recente
+│   │   └── page.tsx              # + assina o digest mais recente (saudação mantida)
 │   └── history/
 │       └── page.tsx              # novo: listagem paginada
 └── components/
@@ -104,6 +105,8 @@ useEffect(() => {
 ```
 
 Renderização: `isLoadingLatest || latestDigest?.status === "processing"` → `DigestSkeleton`; `latestDigest === null` (após carregar) → estado vazio (RF-5); `status === "failed"` → mensagem de erro (RF-4); `status === "completed"` → `DigestMarkdown` com `content.intro` e cada `content.sections[].{title,summary}` (RF-3).
+
+A saudação personalizada já existente ("Bem-vindo ao painel", `user?.displayName || user?.email`) MUST ser mantida — não é uma reescrita completa da página, e sim uma adição do card de digest abaixo da saudação atual, dentro do mesmo layout (`ProtectedRoute` + `AppHeader` + card `bg-surface`).
 
 ### 3. `src/components/digests/DigestMarkdown.tsx`
 
