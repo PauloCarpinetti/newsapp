@@ -23,6 +23,7 @@ O arquivo `.env.local` deve conter as variáveis Firebase e OpenAI. Não commite
 - Proteção de rotas privadas
 - Página `/settings` para editar tópicos (como tags, até 10), fontes de informação, horário de recebimento e customização de prompt, com validação via `react-hook-form` + `zod`
 - Salvamento de preferências via `POST /api/settings`, um endpoint autenticado (Firebase Admin SDK) que calcula `schedule.targetHourUTC` no servidor
-- Cabeçalho compartilhado (`AppHeader`) nas páginas autenticadas, com navegação entre Dashboard/Configurações e logout
+- Cabeçalho compartilhado (`AppHeader`) nas páginas autenticadas, com navegação entre Dashboard/Configurações/Histórico e logout
 - Alternância de tema claro/escuro disponível em toda a aplicação, com preferência persistida e paleta baseada nos tokens de cor do Material Design 3 (`src/app/globals.css`)
 - Pipeline de geração automática de digests (`GET /api/cron/generate`, protegido por `CRON_SECRET`, agendado a cada hora via `vercel.json`): agrega fontes RSS/website do usuário, gera um resumo estruturado via GPT-4o-mini e persiste em `users/{uid}/digests`, com isolamento de falhas por fonte/usuário e proteção contra reprocessamento duplicado
+- `/dashboard` exibe o digest mais recente em tempo real (skeleton enquanto `processing`, mensagem amigável em `failed`, estado vazio para quem ainda não tem nenhum), e `/history` lista os digests anteriores com paginação — ambos renderizando o texto gerado pela IA via `react-markdown`
