@@ -14,7 +14,23 @@ O arquivo `.env.local` deve conter as variáveis Firebase e OpenAI. Não commite
 
 `FIREBASE_CLIENT_EMAIL` e `FIREBASE_PRIVATE_KEY` (chave de conta de serviço do Firebase Admin SDK — Firebase Console → Configurações do Projeto → Contas de Serviço → Gerar nova chave privada) são obrigatórias para os endpoints `/api/settings`, `/api/auth/profile` e `/api/cron/generate` funcionarem.
 
-`OPENAI_API_KEY` é obrigatória para `/api/cron/generate` gerar digests. `CRON_SECRET` protege esse mesmo endpoint — gere um valor aleatório e configure-o também nas variáveis de ambiente do projeto na Vercel (o Cron nativo da Vercel injeta esse valor automaticamente no header `Authorization`).
+`OPENAI_API_KEY` é obrigatória para `/api/cron/generate` gerar digests. `CRON_SECRET` protege esse mesmo endpoint — gere um valor aleatório e configure-o também nas variáveis de ambiente do projeto na Vercel e como secret do GitHub Actions (veja "Disparo do Cron em produção" abaixo).
+
+## Regras de segurança do Firestore
+
+`firestore.rules` neste repositório é a fonte da verdade — o Firebase Console não deve ser editado diretamente sem refletir a mudança aqui primeiro. O padrão é: o client só lê os próprios documentos (`users/{uid}` e `users/{uid}/digests/{digestId}`); toda escrita passa por um endpoint autenticado do Next.js usando o Admin SDK, então a escrita direta do client é sempre negada.
+
+Como este projeto não usa a Firebase CLI, a publicação é manual:
+
+1. Copie o conteúdo de `firestore.rules`.
+2. Firebase Console → projeto `newsapp-f4267` → Firestore Database → aba "Regras".
+3. Cole substituindo o conteúdo atual e clique em "Publicar".
+
+Se no futuro a Firebase CLI for instalada, `firebase deploy --only firestore:rules` publica a partir deste mesmo arquivo (o `.firebaserc` já aponta pro projeto correto).
+
+## Disparo do Cron em produção
+
+O plano Hobby da Vercel só dispara Cron Jobs nativos 1x/dia, mas o pipeline (`GET /api/cron/generate`) precisa rodar a cada hora para respeitar o `schedule.targetHourUTC` de cada usuário. Por isso o disparo horário em produção é feito por um workflow do GitHub Actions (`.github/workflows/cron-digest.yml`), não pelo bloco `crons` do `vercel.json`. O workflow chama a URL de produção com o header `Authorization: Bearer $CRON_SECRET`, usando um secret do repositório (`CRON_SECRET` e `PRODUCTION_URL` em Settings → Secrets and variables → Actions).
 
 ## Funcionalidades atuais
 
