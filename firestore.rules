@@ -1,0 +1,31 @@
+rules_version = '2';
+
+// Fonte da verdade para as regras de segurança do Firestore deste projeto.
+// Publicar manualmente em: Firebase Console -> Firestore Database -> Regras.
+//
+// Padrão de acesso usado por todo o código atual (specs 002-008):
+// - O client (Firebase SDK no browser) só LÊ os próprios documentos.
+// - Toda escrita passa por um endpoint autenticado do Next.js que usa o
+//   Admin SDK (POST /api/auth/profile, POST /api/settings, GET /api/cron/generate).
+//   O Admin SDK ignora estas regras, então "escrita: nunca" aqui não quebra
+//   esses fluxos — só bloqueia escrita direta feita pelo client.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if false;
+
+      match /digests/{digestId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if false;
+      }
+    }
+
+    // Nega tudo que não foi explicitamente liberado acima, incluindo
+    // qualquer coleção futura até que uma regra dedicada seja escrita.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
