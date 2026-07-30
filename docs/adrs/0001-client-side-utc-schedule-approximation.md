@@ -22,3 +22,11 @@ Implementar `calculateTargetHourUTC(localTime, timezone)` (`src/lib/utils/time.t
 - `schedule.targetHourUTC` pode ficar impreciso em até 1 hora para usuários em fusos com DST, em datas próximas a uma transição.
 - A função é isomórfica (roda igual no client e no server) e coberta por testes unitários (`time.test.ts`) cobrindo múltiplos fusos, incluindo offsets de meia hora e virada de meia-noite — o que existe hoje está correto para a data de cálculo, a limitação é sobre datas futuras distantes.
 - Reavaliar esta decisão antes de implementar o Cron Job de disparo de digests (spec futura do Épico 2).
+
+## Revisão — 2026-07-30 (pós spec 007, pipeline em produção)
+
+O Cron Job (spec 007) foi implementado e validado em produção. Reavaliando esta decisão com o pipeline real rodando, o escopo do risco é mais amplo do que a redação original sugeria:
+
+`targetHourUTC` é calculado **uma única vez**, no momento em que o usuário salva `/settings` (`POST /api/settings` → `calculateTargetHourUTC`), e persistido como um inteiro de hora sem nenhuma noção de data. O Cron (`GET /api/cron/generate`) compara esse inteiro fixo contra `new Date().getUTCHours()` a cada execução, indefinidamente, até o usuário salvar as preferências de novo. Ou seja: o risco não é só "perto de uma transição de DST" — é uma janela de **até ~7-8 meses seguidos** (a duração típica do horário de verão em fusos que o observam) em que o digest chega 1 hora adiantado ou atrasado do horário local real que o usuário escolheu, começando exatamente na transição de DST mais próxima após o último save.
+
+**Decisão**: manter a aproximação como está — sem introduzir `date-fns-tz`/`luxon` nem um recálculo periódico automático — pelas mesmas razões de escopo da decisão original (projeto solo, sem reclamação de usuário real, dependência nova não justificada pelo volume atual). O que muda é a natureza da decisão: deixa de ser "acurácia aceitável perto de uma borda rara" e passa a ser "temos um limite conhecido e documentado, não descoberto por acidente depois". Fica registrado como candidato a spec futura caso o projeto ganhe usuários reais e o desalinhamento de 1h vire uma reclamação de verdade — a correção mais simples seria o próprio Cron recalcular `targetHourUTC` sob demanda a partir de `schedule.localTime`/`schedule.timezone` a cada execução, em vez de confiar no valor persistido.
