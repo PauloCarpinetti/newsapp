@@ -1,6 +1,15 @@
 # AI Digest Aggregator
 
-Aplicação inicial em Next.js com App Router, TypeScript e Tailwind para o AI Digest Aggregator.
+Agregador de notícias e fontes pessoais que gera, todo dia no horário escolhido por cada usuário, um resumo (digest) personalizado via IA — a partir dos tópicos, fontes RSS/website e customizações de prompt que o próprio usuário configura. Login com Google, geração 100% automática (sem ação manual do usuário), leitura em tempo real no dashboard e histórico paginado dos digests anteriores.
+
+Next.js (App Router) + TypeScript + Tailwind no frontend, Firebase (Auth + Firestore) para dados, GPT-4o-mini (OpenAI) para geração dos resumos. Rodando em produção na Vercel.
+
+## Arquitetura de produção
+
+- **Frontend + API routes**: Next.js na Vercel, deploy automático a cada push no `main` (integração nativa Vercel ↔ GitHub, sem workflow de deploy próprio).
+- **Auth + dados**: Firebase Authentication (login Google) e Firestore, com [`firestore.rules`](firestore.rules) versionado no repo — veja "Regras de segurança do Firestore" abaixo.
+- **Geração dos digests**: `GET /api/cron/generate`, protegido por `CRON_SECRET`, disparado a cada hora por um workflow do GitHub Actions (não pelo Cron nativo da Vercel) — veja "Disparo do Cron em produção" abaixo.
+- **Decisões de arquitetura**: documentadas em [`docs/adrs/`](docs/adrs/) conforme tomadas (não é um changelog — só decisões com trade-offs reais).
 
 ## Como executar localmente
 
