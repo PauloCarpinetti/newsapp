@@ -16,9 +16,10 @@ Hoje `content.sections[].summary` é curto e não carrega nenhum link de volta �
 
 ## Objetivos
 - Resumos por tópico com mais profundidade/contexto do que a versão atual, sem inventar conteúdo além do que foi agregado das fontes do usuário.
+- A IA MUST registrar a URL do site de notícias que originou cada resumo, para que o usuário consiga acessar a página real da fonte a partir do digest — hoje essa informação é descartada na agregação e o usuário não tem como chegar até a fonte original.
 - Cada tópico ganha até 3 referências (URLs) das fontes que de fato embasaram aquele resumo.
 - A IA nunca inventa uma URL — só pode citar entre as URLs reais fornecidas na entrada (nunca alucinar um link).
-- Fontes `rss` contribuem com a URL de cada item (`item.link`); fontes `website` contribuem com a URL da própria fonte cadastrada (não um link de artigo específico extraído da página — ver Fora de Escopo).
+- Fontes `rss` contribuem com a URL de cada item (`item.link`); fontes `website` contribuem com a URL da própria fonte cadastrada (não um link de artigo específico extraído da página — ver Fora de Escopo). Em ambos os casos, é a URL real do site de notícias que o usuário vê ao clicar.
 - Referências aparecem numa caixa colapsável (fechada por padrão) abaixo do resumo de cada tópico, com fundo levemente diferente da superfície do card.
 
 ## Escopo (In Scope)
