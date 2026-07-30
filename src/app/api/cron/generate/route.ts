@@ -74,9 +74,9 @@ async function processUser(
   try {
     const userData = userDoc.data();
     const sources: Source[] = userData.config?.sources ?? [];
-    const rawText = await aggregateSources(sources);
+    const items = await aggregateSources(sources);
 
-    if (!rawText.trim()) {
+    if (items.length === 0) {
       await digestRef.update({
         status: "failed",
         errorMessage: "Nenhuma fonte retornou conteúdo utilizável.",
@@ -85,7 +85,7 @@ async function processUser(
     }
 
     const { content, tokensUsed } = await generateDigestWithAI(
-      rawText,
+      items,
       userData.config?.topics ?? [],
       userData.config?.promptCustomization ?? null,
       userData.config?.gptModel ?? "gpt-4o-mini",
