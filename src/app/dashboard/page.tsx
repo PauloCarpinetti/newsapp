@@ -5,6 +5,7 @@ import { collection, limit, onSnapshot, orderBy, query } from "firebase/firestor
 import { AppHeader } from "@/components/AppHeader";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { DigestMarkdown } from "@/components/digests/DigestMarkdown";
+import { DigestReferences } from "@/components/digests/DigestReferences";
 import { DigestSkeleton } from "@/components/digests/DigestSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase/config";
@@ -94,6 +95,7 @@ export default function DashboardPage() {
                     <div className="mt-1">
                       <DigestMarkdown text={section.summary} />
                     </div>
+                    <DigestReferences references={section.references ?? []} />
                   </div>
                 ))}
               </div>

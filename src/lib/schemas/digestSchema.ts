@@ -6,6 +6,7 @@ export const digestContentSchema = z.object({
     z.object({
       title: z.string(),
       summary: z.string(),
+      references: z.array(z.string()).max(3),
     }),
   ),
 });

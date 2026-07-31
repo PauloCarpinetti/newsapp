@@ -1,12 +1,20 @@
 import Parser from "rss-parser";
 import * as cheerio from "cheerio";
 
+// RSS: orçamento por item pensado pra manter o total por fonte equivalente ao
+// antigo MAX_CHARS_PER_SOURCE (3000) distribuído pelos até 10 itens buscados.
+const MAX_CHARS_PER_ITEM = 300;
 const MAX_CHARS_PER_SOURCE = 3000;
 const FETCH_TIMEOUT_MS = 10_000;
 
 export type Source = {
   type: "rss" | "twitter" | "website";
   url: string;
+};
+
+export type AggregatedItem = {
+  text: string;
+  url: string | null;
 };
 
 export function truncateText(text: string, maxChars: number): string {
@@ -23,15 +31,18 @@ async function fetchWithTimeout(url: string, ms: number): Promise<Response> {
   }
 }
 
-async function extractFromRss(url: string): Promise<string> {
+async function extractFromRss(url: string): Promise<AggregatedItem[]> {
   const feed = await new Parser().parseURL(url);
-  return feed.items
-    .slice(0, 10)
-    .map((item) => `${item.title ?? ""}\n${item.contentSnippet ?? item.content ?? ""}`)
-    .join("\n\n");
+  return feed.items.slice(0, 10).map((item) => ({
+    text: truncateText(
+      `${item.title ?? ""}\n${item.contentSnippet ?? item.content ?? ""}`,
+      MAX_CHARS_PER_ITEM,
+    ),
+    url: item.link ?? null,
+  }));
 }
 
-async function extractFromWebsite(url: string): Promise<string> {
+async function extractFromWebsite(url: string): Promise<AggregatedItem[]> {
   const response = await fetchWithTimeout(url, FETCH_TIMEOUT_MS);
   if (!response.ok) {
     throw new Error(`HTTP ${response.status} ao buscar ${url}`);
@@ -39,20 +50,19 @@ async function extractFromWebsite(url: string): Promise<string> {
   const html = await response.text();
   const $ = cheerio.load(html);
   $("script, style, nav, footer, header, noscript").remove();
-  return $("body").text().replace(/\s+/g, " ").trim();
+  const text = $("body").text().replace(/\s+/g, " ").trim();
+  return [{ text: truncateText(text, MAX_CHARS_PER_SOURCE), url }];
 }
 
-export async function aggregateSources(sources: Source[]): Promise<string> {
+export async function aggregateSources(sources: Source[]): Promise<AggregatedItem[]> {
   const settled = await Promise.allSettled(
-    sources.map(async (source) => {
+    sources.map((source) => {
       if (source.type === "twitter") {
         throw new Error("Fontes do tipo twitter ainda não são suportadas.");
       }
-      const text =
-        source.type === "rss"
-          ? await extractFromRss(source.url)
-          : await extractFromWebsite(source.url);
-      return truncateText(text, MAX_CHARS_PER_SOURCE);
+      return source.type === "rss"
+        ? extractFromRss(source.url)
+        : extractFromWebsite(source.url);
     }),
   );
 
@@ -67,10 +77,9 @@ export async function aggregateSources(sources: Source[]): Promise<string> {
 
   return settled
     .filter(
-      (result): result is PromiseFulfilledResult<string> =>
+      (result): result is PromiseFulfilledResult<AggregatedItem[]> =>
         result.status === "fulfilled",
     )
-    .map((result) => result.value)
-    .filter(Boolean)
-    .join("\n\n---\n\n");
+    .flatMap((result) => result.value)
+    .filter((item) => item.text.length > 0);
 }
