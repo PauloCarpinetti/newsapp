@@ -10,11 +10,13 @@ import { DigestSkeleton } from "@/components/digests/DigestSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase/config";
 import type { DigestContent } from "@/lib/schemas/digestSchema";
+import { digestDateFormatter } from "@/lib/utils/date";
 
 type LatestDigest = {
   id: string;
   status: "processing" | "completed" | "failed";
   content?: DigestContent;
+  createdAt?: { toDate: () => Date };
 };
 
 export default function DashboardPage() {
@@ -82,7 +84,10 @@ export default function DashboardPage() {
             ) : (
               <div className="rounded-2xl border border-outline-variant bg-surface p-6">
                 <h2 className="text-lg font-semibold text-on-surface">
-                  Seu digest de hoje
+                  Seu digest de{" "}
+                  {latestDigest.createdAt
+                    ? digestDateFormatter.format(latestDigest.createdAt.toDate())
+                    : "hoje"}
                 </h2>
                 <div className="mt-4">
                   <DigestMarkdown text={latestDigest.content?.intro ?? ""} />

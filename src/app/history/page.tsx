@@ -17,6 +17,7 @@ import { DigestMarkdown } from "@/components/digests/DigestMarkdown";
 import { useAuth } from "@/contexts/AuthContext";
 import { db } from "@/lib/firebase/config";
 import type { DigestContent } from "@/lib/schemas/digestSchema";
+import { digestDateFormatter } from "@/lib/utils/date";
 
 const PAGE_SIZE = 10;
 
@@ -31,11 +32,6 @@ const statusLabels: Record<"processing" | "failed", string> = {
   processing: "Gerando...",
   failed: "Falhou",
 };
-
-const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
-  dateStyle: "medium",
-  timeStyle: "short",
-});
 
 export default function HistoryPage() {
   return (
@@ -115,7 +111,7 @@ function HistoryList() {
                 >
                   <p className="text-xs uppercase tracking-wide text-on-surface-variant">
                     {digest.createdAt
-                      ? dateFormatter.format(digest.createdAt.toDate())
+                      ? digestDateFormatter.format(digest.createdAt.toDate())
                       : "Data desconhecida"}
                   </p>
                   {digest.status === "completed" ? (
