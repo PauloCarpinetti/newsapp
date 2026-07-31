@@ -7,6 +7,7 @@ import { loginWithGoogle } from "@/lib/firebase/auth";
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [keepSignedIn, setKeepSignedIn] = useState(true);
   const router = useRouter();
 
   async function handleLogin() {
@@ -14,7 +15,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await loginWithGoogle();
+      await loginWithGoogle(keepSignedIn);
       router.replace("/dashboard");
     } catch (err) {
       setError(
@@ -36,11 +37,21 @@ export default function LoginPage() {
           Entre com o Google para criar ou recuperar o perfil do usuário.
         </p>
 
+        <label className="mt-6 flex items-center gap-2 text-sm text-on-surface-variant">
+          <input
+            type="checkbox"
+            checked={keepSignedIn}
+            onChange={(event) => setKeepSignedIn(event.target.checked)}
+            className="h-4 w-4 rounded border-outline text-primary focus:ring-primary"
+          />
+          Manter conectado
+        </label>
+
         <button
           type="button"
           onClick={handleLogin}
           disabled={loading}
-          className="mt-8 w-full rounded-xl bg-primary px-4 py-3 font-semibold text-on-primary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-4 w-full rounded-xl bg-primary px-4 py-3 font-semibold text-on-primary transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? "Entrando..." : "Entrar com Google"}
         </button>
