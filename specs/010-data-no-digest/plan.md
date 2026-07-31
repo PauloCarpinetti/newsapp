@@ -52,12 +52,17 @@ specs/010-data-no-digest/
 
 ```text
 src/
-└── app/
-    └── dashboard/
-        └── page.tsx   # + createdAt no tipo LatestDigest; cabeçalho usa a data real
+├── app/
+│   ├── dashboard/
+│   │   └── page.tsx   # + createdAt no tipo LatestDigest; cabeçalho usa a data real
+│   └── history/
+│       └── page.tsx   # troca o dateFormatter local pelo util compartilhado
+└── lib/
+    └── utils/
+        └── date.ts    # novo: digestDateFormatter, extraído de history/page.tsx
 ```
 
-**Structure Decision**: Nenhum arquivo novo — mudança contida em `dashboard/page.tsx`.
+**Structure Decision**: Um arquivo novo (`src/lib/utils/date.ts`) para o formatter compartilhado (Decisão Técnica 2), consumido pelos dois arquivos que já existem (`dashboard/page.tsx` e `history/page.tsx`) — sem duplicar a mesma constante `Intl.DateTimeFormat` nos dois lugares.
 
 ## Decisões Técnicas
 
