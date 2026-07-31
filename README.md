@@ -39,7 +39,12 @@ Se no futuro a Firebase CLI for instalada, `firebase deploy --only firestore:rul
 
 ## Disparo do Cron em produção
 
-O plano Hobby da Vercel só dispara Cron Jobs nativos 1x/dia, mas o pipeline (`GET /api/cron/generate`) precisa rodar a cada hora para respeitar o `schedule.targetHourUTC` de cada usuário. Por isso o disparo horário em produção é feito por um workflow do GitHub Actions (`.github/workflows/cron-digest.yml`), sem depender de um bloco `crons` no `vercel.json` (removido — o projeto não usa Cron nativo da Vercel). O workflow chama a URL de produção com o header `Authorization: Bearer $CRON_SECRET`, usando dois secrets do repositório (`CRON_SECRET` e `PRODUCTION_URL`, em Settings → Secrets and variables → Actions → New repository secret).
+O plano Hobby da Vercel só dispara Cron Jobs nativos 1x/dia, mas o pipeline (`GET /api/cron/generate`) precisa rodar a cada hora para respeitar o `schedule.targetHourUTC` de cada usuário. Por isso o disparo horário em produção é feito por um workflow do GitHub Actions (`.github/workflows/cron-digest.yml`), sem depender de um bloco `crons` no `vercel.json` (removido — o projeto não usa Cron nativo da Vercel). O workflow chama a URL de produção com três secrets do repositório (Settings → Secrets and variables → Actions → New repository secret):
+- `CRON_SECRET` — header `Authorization: Bearer $CRON_SECRET`, validado pelo próprio endpoint.
+- `PRODUCTION_URL` — MUST ser o domínio **estável** de produção (Vercel → projeto → aba Domains), não a URL de um deployment específico (formato `newsapp-<hash>-<team>.vercel.app`, que muda a cada novo deploy).
+- `VERCEL_PROTECTION_BYPASS` — a Vercel Authentication (Deployment Protection) fica ativa em Production neste projeto; sem esse bypass, uma requisição não-autenticada é redirecionada para a tela de login da Vercel em vez de chegar no endpoint. Gerado em Vercel → Settings → Deployment Protection → "Protection Bypass for Automation", enviado como header `x-vercel-protection-bypass`.
+
+Se o bypass expirar/for regenerado e o secret do GitHub não for atualizado junto, o sintoma é sutil: o `curl` do workflow (com `--fail`) não detecta erro porque um redirect não é HTTP 4xx/5xx — a execução aparece como **sucesso** no GitHub Actions mesmo sem ter gerado nenhum digest. O workflow usa `--location` pra seguir redirecionamentos como camada extra de defesa/diagnóstico, mas a causa raiz (bypass ausente/desatualizado, ou `PRODUCTION_URL` apontando pra um deployment específico) precisa ser corrigida na origem.
 
 Limitações conhecidas do GitHub Actions Scheduled Workflows (aceitáveis para este projeto, mas vale documentar):
 - O agendamento é "melhor esforço" — em picos de carga da plataforma o disparo pode atrasar alguns minutos.
