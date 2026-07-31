@@ -51,8 +51,9 @@ export async function generateDigestWithAI(
           promptCustomization
             ? `Instruções adicionais do usuário: ${promptCustomization}`
             : "",
-          "Gere uma introdução curta e seções organizadas por tópico, baseadas apenas no conteúdo fornecido.",
-          "Cada resumo de seção deve ser mais detalhado que um único parágrafo curto — cubra os principais pontos do conteúdo agregado daquele tópico, sempre fiel ao que foi fornecido, nunca inventando fatos.",
+          "Gere uma introdução curta e seções organizadas por tópico, baseadas exclusivamente no conteúdo fornecido abaixo — nunca use conhecimento geral, suposições ou fatos que não estejam literalmente presentes no conteúdo fornecido, mesmo que pareçam plausíveis ou que você 'saiba' serem verdade.",
+          "Só crie uma seção para um dos tópicos de interesse do usuário se o conteúdo fornecido tiver informação real e específica sobre ele. Não é obrigatório gerar uma seção por tópico — se nenhum trecho do conteúdo cobrir um tópico, simplesmente não crie seção para ele, em vez de preencher com generalidades ou detalhes inventados.",
+          "Dentro dessa restrição de fidelidade, torne cada resumo o mais detalhado possível — cubra os principais pontos que estejam de fato presentes no conteúdo agregado daquele tópico, mais do que um único parágrafo curto.",
           "Cada seção pode incluir até 3 URLs em 'references'. Uma URL só pode ser citada se aparecer literalmente em uma linha 'URL: ...' do conteúdo fornecido — nunca invente, adivinhe ou modifique uma URL. Se nenhuma fonte relevante tiver URL, deixe 'references' como uma lista vazia.",
         ]
           .filter(Boolean)
