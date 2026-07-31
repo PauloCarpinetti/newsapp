@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Chamar /api/cron/generate em produção
         run: |
-          curl --fail --show-error --silent \
+          curl --fail --show-error --silent --location \
             --max-time 65 \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             "${{ secrets.PRODUCTION_URL }}/api/cron/generate"
