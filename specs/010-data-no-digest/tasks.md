@@ -6,8 +6,8 @@
 
 **Purpose**: Extrair o formatter compartilhado antes de usá-lo nos dois lugares.
 
-- [ ] T001 Create `src/lib/utils/date.ts` exporting `digestDateFormatter` (`Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" })`).
-- [ ] T002 Update `src/app/history/page.tsx` to import `digestDateFormatter` from `src/lib/utils/date.ts` instead of defining its own module-local `dateFormatter` constant; remove the now-duplicate local definition.
+- [x] T001 Create `src/lib/utils/date.ts` exporting `digestDateFormatter` (`Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" })`).
+- [x] T002 Update `src/app/history/page.tsx` to import `digestDateFormatter` from `src/lib/utils/date.ts` instead of defining its own module-local `dateFormatter` constant; remove the now-duplicate local definition.
 
 **Checkpoint**: `/history` continua funcionando exatamente igual, agora usando o formatter compartilhado.
 
@@ -19,8 +19,8 @@
 
 **Independent Test**: Abrir `/dashboard` com um digest `completed` e confirmar que o cabeçalho mostra a data/hora real de criação, formatada igual a `/history`.
 
-- [ ] T003 [US1] Add `createdAt?: { toDate: () => Date }` to the `LatestDigest` type in `src/app/dashboard/page.tsx` (RF-1).
-- [ ] T004 [US1] Replace the fixed "Seu digest de hoje" heading with `Seu digest de {digestDateFormatter.format(latestDigest.createdAt.toDate())}`, falling back to "hoje" only if `createdAt` is somehow absent (RF-1, RF-2).
+- [x] T003 [US1] Add `createdAt?: { toDate: () => Date }` to the `LatestDigest` type in `src/app/dashboard/page.tsx` (RF-1).
+- [x] T004 [US1] Replace the fixed "Seu digest de hoje" heading with `Seu digest de {digestDateFormatter.format(latestDigest.createdAt.toDate())}`, falling back to "hoje" only if `createdAt` is somehow absent (RF-1, RF-2).
 
 **Checkpoint**: O cenário de aceitação do spec passa — data real visível, formatada igual às duas telas.
 
@@ -28,5 +28,5 @@
 
 ## Phase 3: Polish & Cross-Cutting Concerns
 
-- [ ] T005 [P] Confirm `npx tsc --noEmit`, `npm run build`, `npm run lint`, and `npm test` all pass.
-- [ ] T006 [P] Manual validation: abrir `/dashboard` com um digest `completed` real e confirmar visualmente que a data aparece corretamente e bate com a mesma data mostrada em `/history` para o mesmo digest.
+- [x] T005 [P] Confirm `npx tsc --noEmit`, `npm run build`, `npm run lint`, and `npm test` all pass. All four green (29/29 tests).
+- [ ] T006 [P] Manual validation: abrir `/dashboard` com um digest `completed` real e confirmar visualmente que a data aparece corretamente e bate com a mesma data mostrada em `/history` para o mesmo digest. **Não verificado** — exige login real do Paulo.
