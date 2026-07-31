@@ -29,4 +29,4 @@
 ## Phase 3: Polish & Cross-Cutting Concerns
 
 - [x] T005 [P] Confirm `npx tsc --noEmit`, `npm run build`, `npm run lint`, and `npm test` all pass. All four green (29/29 tests).
-- [ ] T006 [P] Manual validation: abrir `/dashboard` com um digest `completed` real e confirmar visualmente que a data aparece corretamente e bate com a mesma data mostrada em `/history` para o mesmo digest. **Não verificado** — exige login real do Paulo.
+- [x] T006 [P] Manual validation: abrir `/dashboard` com um digest `completed` real e confirmar visualmente que a data aparece corretamente e bate com a mesma data mostrada em `/history` para o mesmo digest. Confirmado por Paulo em localhost.
