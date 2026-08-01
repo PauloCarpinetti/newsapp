@@ -42,9 +42,9 @@
 
 - [x] T011 [US2] Add three optional URL inputs (Twitter/X, Instagram, LinkedIn) to the form in `profile/page.tsx`, registrados em `socialLinks.twitter`/`socialLinks.instagram`/`socialLinks.linkedin` (RF-4).
 - [x] T012 [US2] Confirm validation errors render for malformed URLs and that empty fields are accepted — garantido pelo `profileSchema`/`zodResolver` (mesmo mecanismo já testado em T002/T005) e pelo padrão de exibição de erro já usado em `/settings` (RF-5).
-- [ ] T013 [US2] Manual validation: preencher um link válido, salvar, recarregar `/profile` e confirmar que o valor persiste (RF-6). **Não verificado** — exige teste real do Paulo.
+- [x] T013 [US2] Manual validation: preencher um link válido, salvar, recarregar `/profile` e confirmar que o valor persiste (RF-6). Confirmado por Paulo em localhost.
 
-**Checkpoint**: Cenário de aceitação 2 implementado; cenário 3 (validação) coberto por T012; **persistência entre sessões (cenário 2) ainda não confirmada ao vivo**.
+**Checkpoint**: Cenários de aceitação 2 e 3 do spec confirmados ao vivo.
 
 ---
 
@@ -58,7 +58,7 @@
 - [x] T015 [US3] Wire the delete button to `DELETE /api/profile` (com o ID token do usuário); em sucesso, chamar `logout()` e redirecionar para `/` (RF-9, RF-10).
 - [x] T016 [US3] Render `<DeleteAccountDialog />` in `profile/page.tsx`, visualmente separado do formulário de edição (RF-7).
 
-**Checkpoint**: Implementado e revisado em código (ordem de exclusão, gate de confirmação). **Validação ao vivo deliberadamente adiada para o Paulo testar com uma conta descartável** (T019) — operação irreversível, não testada por mim mesmo com dados reais.
+**Checkpoint**: Cenários de aceitação 4 e 5 do spec confirmados ao vivo por Paulo, usando uma conta de teste descartável — exclusão completa (perfil, preferências, digests, conta Auth) e desconexão/redirecionamento funcionaram corretamente.
 
 ---
 
@@ -68,5 +68,5 @@
 
 - [x] T017 [P] Add a note in `README.md`'s "Funcionalidades atuais" describing the new `/profile` page (edição de nome, redes sociais, exclusão de conta).
 - [x] T018 [P] Confirm `npx tsc --noEmit`, `npm run build`, `npm run lint`, and `npm test` all pass. Todos os quatro verdes (35/35 testes).
-- [ ] T019 [P] Manual end-to-end validation of the 5 acceptance scenarios in spec.md — **atenção redobrada no cenário 4 (exclusão de conta)**: usar uma conta de teste descartável, não a conta pessoal real do Paulo, dado o caráter irreversível da operação. **Não verificado** — pendente do Paulo.
+- [x] T019 [P] Manual end-to-end validation of the 5 acceptance scenarios in spec.md — **atenção redobrada no cenário 4 (exclusão de conta)**: usar uma conta de teste descartável, não a conta pessoal real do Paulo, dado o caráter irreversível da operação. Confirmado por Paulo: todos os cenários testados localmente, incluindo a exclusão de conta com conta descartável.
 - [ ] T020 [P] After merge, write an ADR (`docs/adrs/0008-*.md`) documenting the account-deletion ordering pattern (digests → user doc → Auth account, stop on first failure) — primeira operação destrutiva/irreversível do projeto, per `plan.md`'s Constitution Check note.
