@@ -36,6 +36,9 @@ export function AppHeader() {
           <Link href="/history" className="hover:text-primary">
             Histórico
           </Link>
+          <Link href="/profile" className="hover:text-primary">
+            Perfil
+          </Link>
           <button
             type="button"
             onClick={handleLogout}
