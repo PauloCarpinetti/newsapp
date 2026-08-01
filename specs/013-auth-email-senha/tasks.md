@@ -27,9 +27,9 @@
 
 - [x] T007 [US1] Implement `registerWithEmail(email, password, keepSignedIn)` in `auth.ts`: `applyPersistence` → `createUserWithEmailAndPassword` → `createProfile` (RF-1, RF-4).
 - [x] T008 [US1] Rewrite `src/app/login/page.tsx`: formulário `react-hook-form` + `zodResolver(authSchema)` (e-mail, senha), estado `mode: "login" | "signup"`, botão de alternância "Criar conta"/"Já tenho conta", `onSubmitEmail` chamando `registerWithEmail` quando `mode === "signup"` (RF-1).
-- [ ] T009 [US1] Manual validation: e-mail/senha inválidos são bloqueados antes de chamar o Firebase (RF-2); cadastrar um e-mail já em uso mostra a mensagem específica de `mapAuthError` (RF-3); cadastro bem-sucedido cria `users/{uid}` e redireciona pra `/dashboard` (RF-4). **Não verificado** — exige teste real do Paulo.
+- [x] T009 [US1] Manual validation: e-mail/senha inválidos são bloqueados antes de chamar o Firebase (RF-2); cadastrar um e-mail já em uso mostra a mensagem específica de `mapAuthError` (RF-3); cadastro bem-sucedido cria `users/{uid}` e redireciona pra `/dashboard` (RF-4). Confirmado por Paulo.
 
-**Checkpoint**: Implementado; validação ao vivo pendente (T018).
+**Checkpoint**: Cenários de aceitação 1 e 2 confirmados ao vivo.
 
 ---
 
@@ -41,9 +41,9 @@
 
 - [x] T010 [US2] Implement `loginWithEmail(email, password, keepSignedIn)` in `auth.ts`: `applyPersistence` → `signInWithEmailAndPassword` → `createProfile` (idempotente, já existe) (RF-5, RF-7).
 - [x] T011 [US2] Wire `onSubmitEmail` in `login/page.tsx` to call `loginWithEmail` when `mode === "login"` (RF-5).
-- [ ] T012 [US2] Manual validation: login com credenciais corretas chega ao `/dashboard` (RF-5); login com e-mail inexistente e login com senha errada mostram a **mesma** mensagem de erro (RF-6); checkbox "Manter conectado" desmarcado no login por e-mail produz sessão que não sobrevive ao fechar o navegador, mesmo comportamento já validado pro Google na spec 011 (RF-7). **Não verificado** — exige teste real do Paulo.
+- [x] T012 [US2] Manual validation: login com credenciais corretas chega ao `/dashboard` (RF-5); login com e-mail inexistente e login com senha errada mostram a **mesma** mensagem de erro (RF-6); checkbox "Manter conectado" desmarcado no login por e-mail produz sessão que não sobrevive ao fechar o navegador, mesmo comportamento já validado pro Google na spec 011 (RF-7). Confirmado por Paulo.
 
-**Checkpoint**: Implementado; validação ao vivo pendente (T018).
+**Checkpoint**: Cenários de aceitação 3 e 4 confirmados ao vivo.
 
 ---
 
@@ -55,9 +55,9 @@
 
 - [x] T013 [US3] Implement `resetPassword(email)` in `auth.ts`: `sendPasswordResetEmail`, erros mapeados via `mapAuthError` (RF-8).
 - [x] T014 [US3] Add "Esqueci minha senha" link/button to `login/page.tsx`, visível só em `mode === "login"`; valida o e-mail digitado (`authSchema.shape.email.safeParse`) antes de chamar `resetPassword`; mostra mensagem de confirmação genérica em `resetSent` (RF-8, RF-9).
-- [ ] T015 [US3] Manual validation: solicitar redefinição para um e-mail cadastrado e para um e-mail não cadastrado mostram a mesma mensagem de confirmação (RF-9). **Não verificado** — exige teste real do Paulo (recebimento de e-mail real).
+- [x] T015 [US3] Manual validation: solicitar redefinição para um e-mail cadastrado e para um e-mail não cadastrado mostram a mesma mensagem de confirmação (RF-9). A mensagem de confirmação apareceu corretamente (código funcionando, `sendPasswordResetEmail` não lançou erro), mas o e-mail em si não chegou na caixa de entrada/spam do endereço de teste (um e-mail institucional de faculdade, também gerenciado pelo Google) — provável filtro de e-mail automatizado do domínio institucional, não reproduzido como bug do app. Paulo decidiu não bloquear o merge por isso.
 
-**Checkpoint**: Implementado; validação ao vivo pendente (T018).
+**Checkpoint**: Cenário de aceitação 5 confirmado no comportamento da UI; entrega real do e-mail nesse domínio específico é uma ressalva conhecida, não um bug de código identificado.
 
 ---
 
@@ -67,4 +67,4 @@
 
 - [x] T016 [P] Add a note in `README.md`'s "Funcionalidades atuais" describing email/password sign-up, sign-in, and password reset on `/login`.
 - [x] T017 [P] Confirm `npx tsc --noEmit`, `npm run build`, `npm run lint`, and `npm test` all pass. Todos os quatro verdes (44/44 testes).
-- [ ] T018 [P] Manual end-to-end validation of the 5 acceptance scenarios in spec.md. **Não verificado** — pendente do Paulo.
+- [x] T018 [P] Manual end-to-end validation of the 5 acceptance scenarios in spec.md. Confirmado por Paulo — ver nota do T015 sobre a ressalva de entrega de e-mail em domínio institucional.
