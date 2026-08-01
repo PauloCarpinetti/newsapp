@@ -54,7 +54,7 @@ Limitações conhecidas do GitHub Actions Scheduled Workflows (aceitáveis para 
 ## Funcionalidades atuais
 
 - Landing page do produto
-- Fluxo de login com Google, com a criação do perfil do usuário no Firestore feita por um endpoint autenticado (`POST /api/auth/profile`, Firebase Admin SDK), não mais por escrita direta do client
+- Fluxo de login com Google e por e-mail/senha (cadastro, entrada e redefinição de senha), com a criação do perfil do usuário no Firestore feita por um endpoint autenticado (`POST /api/auth/profile`, Firebase Admin SDK) independente do provedor, não mais por escrita direta do client
 - Proteção de rotas privadas
 - Página `/settings` para editar tópicos (como tags, até 10), fontes de informação, horário de recebimento e customização de prompt, com validação via `react-hook-form` + `zod`
 - Salvamento de preferências via `POST /api/settings`, um endpoint autenticado (Firebase Admin SDK) que calcula `schedule.targetHourUTC` no servidor
