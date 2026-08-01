@@ -59,6 +59,9 @@ RF-2: O usuário MUST conseguir editar e salvar um novo nome de exibição.
 RF-3: O e-mail exibido MUST ser somente leitura — não editável nesta página.
 - Aceitação: Não há campo de edição para o e-mail; o valor mostrado nunca muda por ação do usuário dentro do app.
 
+RF-11: O `AppHeader` MUST incluir um link para `/profile`, junto com Dashboard/Configurações/Histórico já existentes.
+- Aceitação: A partir de `/dashboard`, `/settings` ou `/history`, o usuário consegue chegar em `/profile` clicando em um link do cabeçalho, sem editar a URL manualmente.
+
 ### US2 — Cadastrar Redes Sociais (Priority: P2)
 RF-4: A página `/profile` MUST oferecer três campos opcionais de URL: Twitter/X, Instagram e LinkedIn.
 - Aceitação: Os três campos aparecem vazios para um usuário que nunca os preencheu, e com o valor salvo para quem já preencheu antes.
@@ -87,6 +90,7 @@ RF-10: Após a exclusão bem-sucedida, o usuário MUST ser desconectado e redire
 - SC-2: Nenhum link de rede social malformado chega a ser salvo.
 - SC-3: Excluir uma conta remove 100% dos dados associados a ela (perfil, preferências, histórico de digests) — nada órfão permanece no Firestore.
 - SC-4: A exclusão de conta nunca acontece por um único clique acidental — sempre exige a confirmação digitada.
+- SC-5: `/profile` é alcançável a partir da navegação principal, sem exigir digitar a URL.
 
 ## Cenários de Aceitação
 1. Cenário: Editar nome de exibição
@@ -113,6 +117,11 @@ RF-10: Após a exclusão bem-sucedida, o usuário MUST ser desconectado e redire
    - Dado um usuário na seção de exclusão de conta
    - Quando ele não digita a palavra de confirmação (ou digita errado)
    - Então o botão de exclusão definitiva permanece desabilitado e nada é apagado
+
+6. Cenário: Navegação até o perfil
+   - Dado um usuário autenticado em `/dashboard`, `/settings` ou `/history`
+   - Quando ele clica no link "Perfil" no cabeçalho
+   - Então chega em `/profile` sem precisar digitar a URL manualmente
 
 ## Entidades Chave
 - `User.profile.socialLinks` — novo campo em `users/{uid}` (ver Data Dictionary).

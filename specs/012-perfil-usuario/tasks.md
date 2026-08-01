@@ -28,9 +28,9 @@
 - [ ] T007 [US1] Load initial values: `displayName`/`email`/`photoURL` de `user` (Firebase Auth, via `useAuth()`) e `socialLinks` de `users/{uid}.profile.socialLinks` (Firestore `getDoc`, mesmo padrão de leitura de `/settings`) (RF-1).
 - [ ] T008 [US1] Render a foto (`<img>` simples, sem `next/image`), o nome (campo editável) e o e-mail (texto somente leitura, sem input) (RF-1, RF-3).
 - [ ] T009 [US1] Wire `onSubmit`: chamar `updateProfile(user, { displayName })` (Firebase Auth) primeiro, depois `POST /api/profile` com o corpo completo (`displayName` + `socialLinks`) (RF-2).
-- [ ] T010 [US1] Add `<Link href="/profile">Perfil</Link>` to `src/components/AppHeader.tsx`'s navigation group.
+- [ ] T010 [US1] Add `<Link href="/profile">Perfil</Link>` to `src/components/AppHeader.tsx`'s navigation group (RF-11).
 
-**Checkpoint**: Cenário de aceitação 1 do spec passa — editar o nome reflete no `/dashboard` sem logout/login.
+**Checkpoint**: Cenários de aceitação 1 e 6 do spec passam — editar o nome reflete no `/dashboard` sem logout/login, e `/profile` é alcançável pelo `AppHeader`.
 
 ---
 
