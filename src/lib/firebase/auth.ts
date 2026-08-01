@@ -1,5 +1,8 @@
 import {
   GoogleAuthProvider,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  setPersistence,
   signInWithPopup,
   signOut as firebaseSignOut,
 } from "firebase/auth";
@@ -7,8 +10,13 @@ import { auth } from "@/lib/firebase/config";
 
 const provider = new GoogleAuthProvider();
 
-export async function loginWithGoogle() {
+export async function loginWithGoogle(keepSignedIn: boolean) {
   try {
+    await setPersistence(
+      auth,
+      keepSignedIn ? browserLocalPersistence : browserSessionPersistence,
+    );
+
     const result = await signInWithPopup(auth, provider);
     const idToken = await result.user.getIdToken();
 
